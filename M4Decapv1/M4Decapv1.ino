@@ -1,3 +1,11 @@
+/*
+ * M4Decapv1 by Camille Aussems
+ * Selexis Geneva 26.08.2022
+ * To run on an arduino portenta H7 with vision shield
+ * Drive up to 3 driver/controller TMC4361A - TMC2660
+ * Upload on M4 core
+ * 
+ */
 #include <SPI.h>
 #include "TMC4361A_Register.h"
 #include "Arduino.h"
@@ -21,10 +29,26 @@
 #define DRIVER_EN digitalWrite(EN_PIN,LOW)
 #define DRIVER_DISABLE digitalWrite(EN_PIN,HIGH)
 
+#define TIMEOUT_MVMT 30000 //30 sec
+#define TIMEOUT 10000 //10 sec
+
+#define SCREW_TIME 6 //4 sec to screw/unscrew the cap
+
+#define USTEPS  256 //number of usteps by full steps
+#define STEP_TURN 200 //number of full steps in a single turn of the axis
+
+#define ZGEAR   5
+#define CGEAR   51
+const float CTRANS =  1.25;
+#define MGEAR   51
 #define F_CPU       200000000
 uint32_t ExtClk;
 
+int Cpos = 0;
+int *PCpos = &Cpos;
 int state = 0; //State used by the finite state machine
+int* Pstate = &state;
+
 //Declare the 3 Drivers
 TMC4361A ControllerZ(CS1,TGT1);
 TMC4361A ControllerM(CS2,TGT2);
@@ -45,35 +69,43 @@ void setup() {
   DRIVER_EN; //Enable the drivers
   RPC.println("M4 setup done");
 
-  goToStandby();
+  setPosition();
 }
 
 void loop() {
-  static uint32_t last_time = 0;
-  static uint32_t last_time2 = 0;
-  uint32_t ms = millis();
-  uint32_t data;
-
-  if((ms-last_time)> 2000){
-    last_time = ms;
-    Serial.println("------------ Z --------------");
-    Serial.print("Xactual = ");Serial.print(ControllerZ.readRegister(TMC4361A_XACTUAL));
-    Serial.print(" Xtarget = ");Serial.println(ControllerZ.readRegister(TMC4361A_X_TARGET));
-    Serial.print("Encoder angle = ");Serial.println(ControllerZ.getEncoderAngle());
-    Serial.print("Encoder turn = ");Serial.println(ControllerZ.getEncoderTurn());
-    Serial.println("----------------------");
-    Serial.println("------------ X --------------");
-    Serial.print("Xactual = ");Serial.print(ControllerM.readRegister(TMC4361A_XACTUAL));
-    Serial.print(" Xtarget = ");Serial.println(ControllerM.readRegister(TMC4361A_X_TARGET));
-    Serial.print("Encoder angle = ");Serial.println(ControllerM.getEncoderAngle());
-    Serial.print("Encoder turn = ");Serial.println(ControllerM.getEncoderTurn());
-    Serial.println("----------------------");
-
-    if(ControllerZ.isTargetReached()){
-      ControllerZ.setTargetRelative(200*256*20);//20 turns
-    }
-    if(ControllerM.isTargetReached()){
-      ControllerM.setTargetRelative(200*256*5);
-    }
+  //Wait for call from the M7 core to do something
+  switch(state){
+    case 0: //standby state
+      delay(100);
+      break;
+    case 1: //Decap
+      decap();
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0; //return to default state
+      //send decap done to M7
+      break;
+    case 2: //Recap
+      recap();
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0; //return to default state
+      //send recap done to M7
+      break;
+    case 3: //Init_drivers
+      break;
+    case 4: //Write_parameters
+      break;
+    case 5: //read parameters
+      break;
+    case 11: //manual Z move
+      break;
+    case 12: //Manual M move
+      break;
+    case 13: //Manual C move
+      break;
+    default:
+      RPC.println("Wrong state");
+      break;
   }
 }
