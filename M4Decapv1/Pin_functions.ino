@@ -1,7 +1,4 @@
 void pin_init() {
-  pinMode(EN_PIN, OUTPUT);
-  digitalWrite(EN_PIN, HIGH); //deactivate driver (LOW active)
-  //pinMode(STALL_PIN,INPUT);
   
   pinMode(CS1, OUTPUT);
   digitalWrite(CS1, HIGH);
@@ -23,7 +20,7 @@ void pin_init() {
 }
 
 void tgt1_reached(){
-  state = 0;
+  state = 4;
 }
 void tgt2_reached(){
   state = 0;

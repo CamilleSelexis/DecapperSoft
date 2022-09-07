@@ -6,7 +6,7 @@ void init_RPC(){
   RPC.bind("MoveZ",launchMoveZ);
   RPC.bind("MoveM",launchMoveM);
   RPC.bind("MoveC",launchMoveC);
-  RPC.bind("ZCurrentPos",ZCurrentPos);
+  /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);
   RPC.bind("ApproachFlask",ApproachFlask);
@@ -20,10 +20,10 @@ void init_RPC(){
   RPC.bind("GetDown",Getdowngo);
   RPC.bind("GoToStandby",GoToStandby);
   RPC.bind("setParams",SetParams);
-  RPC.bind("readM4Params",readM4Params);
+  RPC.bind("readM4Params",readM4Params);*/
 }
 
-void setPosition(){
+void getCurrentPosition(){
   float turn = ControllerZ.getEncoderTurn();
   float angle = ControllerZ.getEncoderAngle();
   long actualZ = floor((turn*360+angle)*USTEPS/1.8); //1.8 deg by full steps
