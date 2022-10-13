@@ -1,3 +1,5 @@
+//Contains functions setting target positions for the 3 motors
+//Open the claws and lower the arm
 bool ApproachFlask(){
   RPC.println("Going closer to the flask");
   ControllerZ.setTarget(Znear);
@@ -11,6 +13,7 @@ bool ApproachFlask(){
   return true;
 }
 
+//Align the claws with the line on the cap
 bool AlignCap(int capPos){
   RPC.println("Aligning the claws with the cap");
   ControllerC.setTargetRelative(capPos);
@@ -21,6 +24,7 @@ bool AlignCap(int capPos){
   return true;
 }
 
+//perform the unscrewing movement -> lower the arm, close the claws, turn CCW while going up
 bool UnscrewCap(){
   RPC.println("Press the cap");
   ControllerZ.setTarget(capHeight);
@@ -47,6 +51,7 @@ bool UnscrewCap(){
   return true;
 }
 
+//Go to the standby position
 bool goToStandby() {
   ControllerZ.setTarget(standbyZ);
   ControllerC.setTarget(standbyC);
@@ -60,6 +65,7 @@ bool goToStandby() {
   return true;
 }
 
+//Perform screwing movement, lower the arm, turn CW while going down, open the claws
 bool ScrewCap(){
   RPC.println("Press the cap");
   ControllerZ.setTarget(screwStartZ);

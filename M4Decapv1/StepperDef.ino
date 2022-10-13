@@ -1,3 +1,4 @@
+//Set the motor speed
 void motor_low_speed(){
   //Set the speed to 1 rot/s
   ControllerZ.setVMAX(1,1);
@@ -8,7 +9,7 @@ void motor_low_speed(){
   ControllerM.setAMAX(AMAX_SLOW);
   ControllerC.setAMAX(AMAX_SLOW);
 }
-
+//Set the motor speed
 void motor_high_speed(){
   //Set the speed to 5 rot/s
   ControllerZ.setVMAX(5,1);
@@ -20,6 +21,7 @@ void motor_high_speed(){
   ControllerC.setAMAX(AMAX_DEFAULT);
 }
 
+//Speed used for screwing/unscrewing of the cap
 void setScrewingSpeed() {
 
   unsigned long Zmove = ceil(ZGEAR*STEP_TURN*USTEPS*4.1); //in steps
@@ -34,7 +36,7 @@ void setScrewingSpeed() {
   ControllerZ.setAMAX(AMAX_DEFAULT);
   ControllerC.setAMAX(AMAX_DEFAULT);
 }
-
+//Set motors speed to default
 void setDefaultSpeed() {
   ControllerZ.setVMAX(VMAX_DEFAULT,0);
   ControllerC.setVMAX(VMAX_DEFAULT,0);

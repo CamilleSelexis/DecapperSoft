@@ -1,3 +1,4 @@
+//Set the pin as output or input
 void pin_init() {
   
   pinMode(CS1, OUTPUT);
@@ -20,7 +21,7 @@ void pin_init() {
 }
 
 void tgt1_reached(){
-  state = 4;
+  state = 0;
 }
 void tgt2_reached(){
   state = 0;

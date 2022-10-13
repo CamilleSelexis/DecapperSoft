@@ -4,7 +4,7 @@
  * To run on an arduino portenta H7 with vision shield
  * Drive up to 3 driver/controller TMC4361A - TMC2660
  * Upload on M4 core
- * 
+ * Based on version 3.3 of core-mbed
  */
 #include <SPI.h>
 #include "TMC4361A_Register.h"

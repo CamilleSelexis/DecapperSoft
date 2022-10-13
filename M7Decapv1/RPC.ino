@@ -8,6 +8,9 @@ bool initDone(){
   *M4work_pntr = false;
   *isInit_pntr = true;
   *capHeld_pntr = false;
+  DRIVER_OFF;
+  LEDR_OFF;
+  RELAY_OFF;
   Serial.print("initDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   return true;
 }

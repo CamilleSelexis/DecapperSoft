@@ -93,7 +93,6 @@ const uint8_t n = 2;             //Size of the moving average avg done on 2n+1
 //Ethernet related variables ----------------------------------------------------
 byte mac[] = {0xDE, 0xA1, 0x00, 0x73, 0x24, 0x12};  //Mac adress
 
-//IPAddress ip(10,0,16,1);
 int8_t ip_addr[4] = {192,168,1,101};
 String StringIP = String(ip_addr[0]) + "." + String(ip_addr[1]) + "." + String(ip_addr[2]) + "." + String(ip_addr[3]);
 IPAddress ip(ip_addr[0],ip_addr[1],ip_addr[2],ip_addr[3]); //

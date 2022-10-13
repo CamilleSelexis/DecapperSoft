@@ -1,3 +1,4 @@
+//this function is called when a motor is running and returns true when each motor is done, return false if the movement timeouts (30 sec)
 bool motor_running(){
   digitalWrite(LEDR,LOW);
   long time_start = millis();

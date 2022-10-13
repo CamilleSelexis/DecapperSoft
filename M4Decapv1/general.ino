@@ -31,13 +31,13 @@ void getCurrentPosition(){
   ControllerZ.setCurrentPos(actualZ);
 
   turn = ControllerC.getEncoderTurn();
-  angle = ControllerC.getEncoderTurn();
+  angle = ControllerC.getEncoderAngle();
   long actualC = floor((turn*360+angle)*USTEPS/1.8);
 
   ControllerC.setCurrentPos(actualC);
 
   turn = ControllerM.getEncoderTurn();
-  angle = ControllerM.getEncoderTurn();
+  angle = ControllerM.getEncoderAngle();
   long actualM = floor((turn*360+angle)*USTEPS/1.8);
 
   ControllerM.setCurrentPos(actualM);
