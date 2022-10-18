@@ -17,7 +17,7 @@
 
 #define DECAP_ID  1
 
-#define EN_PIN  D0 //D14
+#define EN_PIN  D14 //NFREEZE pin. active low, when low interrupt all outputs
 
 #define TGT1      D4
 #define TGT2      D5
@@ -159,7 +159,7 @@ void setup() {
 
 void loop() {
   LEDB_ON;
-  delay(100);
+  delay(200);
   /*
   EthernetClient client = server.available();
   EthernetClient* client_pntr = &client;
@@ -232,9 +232,10 @@ void loop() {
   }//if(client)
   */   
   LEDB_OFF;
-  delay(100);
+  delay(200);
 
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
+  //if(*M4work_pntr){
   if(1){
     String buffer = "";
     while (RPC.available()) {
