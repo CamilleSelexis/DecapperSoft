@@ -31,3 +31,12 @@ void Recap(){
   RELAY_ON;
   *M4work_pntr = RPC.call("Recap").as<bool>();
 }
+
+void moveZ(){
+  task_start_time = millis();
+  Serial.println("Moving Z axis");
+  LEDR_ON;
+  DRIVER_ON;
+  RELAY_ON;
+  *M4work_pntr = RPC.call("MoveZ").as<bool>();
+}

@@ -13,7 +13,7 @@ void pin_init() {
   pinMode(MOSI_PIN, OUTPUT);
   pinMode(MISO_PIN, INPUT);
   pinMode(SCK_PIN, OUTPUT);
-
+  
   //Interrupt on the TGT pins
   attachInterrupt(digitalPinToInterrupt(TGT1),tgt1_reached,RISING);
   attachInterrupt(digitalPinToInterrupt(TGT2),tgt2_reached,RISING);

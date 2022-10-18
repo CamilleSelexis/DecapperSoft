@@ -1,5 +1,6 @@
 bool M4TaskCompleted(){
   *M4work_pntr = false;
+  Serial.println("M4 finished its task and is now ready");
   return true;
 }
 

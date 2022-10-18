@@ -17,7 +17,7 @@
 
 #define DECAP_ID  1
 
-#define EN_PIN  D14
+#define EN_PIN  D0 //D14
 
 #define TGT1      D4
 #define TGT2      D5
@@ -35,8 +35,10 @@
 #define F_CPU       200000000
 uint32_t ExtClk;
 
-#define DRIVER_ON digitalWrite(EN_PIN,LOW);
-#define DRIVER_OFF digitalWrite(EN_PIN,HIGH);
+#define DRIVER_ON delay(20);
+#define DRIVER_OFF delay(20);
+/*#define DRIVER_ON digitalWrite(EN_PIN,LOW);
+#define DRIVER_OFF digitalWrite(EN_PIN,HIGH);*/
 
 #define RELAY_ON digitalWrite(RELAY_PIN,HIGH);
 #define RELAY_OFF digitalWrite(RELAY_PIN,LOW);
@@ -60,7 +62,7 @@ bool *isInit_pntr = &isInit;      //Goes true after the init routine
 bool capHeld = false;           //Goes true after a decap and false after a recap
 bool *capHeld_pntr = &capHeld;
 
-volatile bool M4work = false;          //Cette variable est vrai lorsque le M4 effectue une tache
+volatile bool M4work = true;          //Cette variable est vrai lorsque le M4 effectue une tache
 volatile bool *M4work_pntr = &M4work;     //N'est pas utilisé pour le moment mais pourrait être utile
 
 long task_start_time = 0; //variable to store the time needed to perform a given task
@@ -112,9 +114,8 @@ void setup() {
   ExtClk = F_CPU/10;
   //init serial port
   Serial.begin(115200);
-  //while(!Serial);
+  while(!Serial);
   Serial.println("Setup start");
-  bootM4(); //Boot the second core
   //DRIVER_ON; //Should check if this is necessary for the setup
   RPC.begin();
   RPC.bind("M4TaskCompleted",M4TaskCompleted);
@@ -123,7 +124,7 @@ void setup() {
   RPC.bind("initDone",initDone);
 
   //Init the camera
-  if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
+  /*if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
     Serial.println("Cam initialised");//initialise the camera
   }
   else{
@@ -149,15 +150,17 @@ void setup() {
   server.begin();           //"server" is the name of the object for comunication through ethernet
   Serial.print("Ethernet server connected. Server is at ");
   Serial.println(Ethernet.localIP());         //Gives the local IP through serial com
+  */
   LEDB_OFF;
   LEDG_ON;
   Serial.println("Setup done");
+  //bootM4(); //Boot the second core
 }
 
 void loop() {
   LEDB_ON;
   delay(100);
-
+  /*
   EthernetClient client = server.available();
   EthernetClient* client_pntr = &client;
   if(client){ //A client tries to connect 
@@ -212,6 +215,10 @@ void loop() {
             Recap();
           }
         }
+        else if(currentLine.endsWith("moveZ")){
+          answerHttp(client_pntr,currentLine);
+          moveZ();
+        }
         
       }//if(client.available())
       else if(millis()-time_start > TIMEOUT_ETH){
@@ -223,12 +230,12 @@ void loop() {
     client.stop();
     
   }//if(client)
-
+  */   
   LEDB_OFF;
   delay(100);
 
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
-  if(*M4work_pntr){
+  if(1){
     String buffer = "";
     while (RPC.available()) {
       buffer += (char)RPC.read(); // Fill the buffer with characters
