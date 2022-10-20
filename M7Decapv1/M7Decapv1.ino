@@ -103,8 +103,10 @@ EthernetServer server = EthernetServer(80);  // (port 80 is default for HTTP) 52
 void setup() {
   //set Pins
   pinMode(CLK16_PIN,OUTPUT);
-  pinMode(EN_PIN,OUTPUT);
-  DRIVER_OFF;
+  LEDG_ON;
+  //pinMode(EN_PIN,OUTPUT);
+  //digitalWrite(EN_PIN,HIGH);
+  DRIVER_OFF
   //set up Timer1 for clk generation
   mbed::PwmOut* pwm = new mbed::PwmOut(digitalPinToPinName(CLK16_PIN));
   digitalPinToPwm(CLK16_PIN) = pwm;
@@ -122,18 +124,19 @@ void setup() {
   RPC.bind("decapDone",decapDone);
   RPC.bind("recapDone",recapDone);
   RPC.bind("initDone",initDone);
-
+  /*
   //Init the camera
-  /*if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
+  if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
     Serial.println("Cam initialised");//initialise the camera
   }
   else{
     Serial.println("Cam failed to initialize");
   }
   cam.setStandby(true);                //Put it in standby mode
-
+  
   //Init the Ethernet communications
   LEDB_ON;
+  */
   Serial.println("Ethernet Coms starting...");
   Ethernet.begin(mac,ip);  //Start the Ethernet coms
   // Check for Ethernet hardware present
@@ -150,11 +153,10 @@ void setup() {
   server.begin();           //"server" is the name of the object for comunication through ethernet
   Serial.print("Ethernet server connected. Server is at ");
   Serial.println(Ethernet.localIP());         //Gives the local IP through serial com
-  */
-  LEDB_OFF;
-  LEDG_ON;
+  
+  
+  LEDG_OFF;
   Serial.println("Setup done");
-  //bootM4(); //Boot the second core
 }
 
 void loop() {

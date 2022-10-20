@@ -15,9 +15,9 @@ void pin_init() {
   pinMode(SCK_PIN, OUTPUT);
   
   //Interrupt on the TGT pins
-  attachInterrupt(digitalPinToInterrupt(TGT1),tgt1_reached,RISING);
+  /*attachInterrupt(digitalPinToInterrupt(TGT1),tgt1_reached,RISING);
   attachInterrupt(digitalPinToInterrupt(TGT2),tgt2_reached,RISING);
-  attachInterrupt(digitalPinToInterrupt(TGT3),tgt3_reached,RISING);
+  attachInterrupt(digitalPinToInterrupt(TGT3),tgt3_reached,RISING);*/
 }
 
 void tgt1_reached(){
