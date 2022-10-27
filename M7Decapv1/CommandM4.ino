@@ -40,3 +40,34 @@ void moveZ(){
   RELAY_ON;
   *M4work_pntr = RPC.call("MoveZ").as<bool>();
 }
+void moveM(){
+  task_start_time = millis();
+  Serial.println("Moving M axis");
+  LEDR_ON;
+  DRIVER_ON;
+  RELAY_ON;
+  *M4work_pntr = RPC.call("MoveM").as<bool>();
+}
+void moveC(){
+  task_start_time = millis();
+  Serial.println("Moving C axis");
+  LEDR_ON;
+  DRIVER_ON;
+  RELAY_ON;
+  *M4work_pntr = RPC.call("MoveC").as<bool>();
+}
+
+void updateM4() {
+  ZPos = RPC.call("ZPos").as<long>();
+  ZTarget = RPC.call("ZTarget").as<long>();
+  MPos = RPC.call("MPos").as<long>();
+  MTarget = RPC.call("MTarget").as<long>();
+  CPos = RPC.call("CPos").as<long>();
+  CTarget = RPC.call("CTarget").as<long>();
+}
+
+void updateEncoder() {
+  ZPosEnc = RPC.call("ZPosEnc").as<long>();
+  MPosEnc = RPC.call("MPosEnc").as<long>();
+  CPosEnc = RPC.call("CPosEnc").as<long>();
+}

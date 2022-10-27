@@ -35,3 +35,8 @@ bool recapDone(){
   Serial.print("recapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   return true;
 }
+
+bool ZCurrentPos(long motorPos){
+  ZPos = motorPos;
+  return true;
+}

@@ -66,6 +66,17 @@ volatile bool M4work = true;          //Cette variable est vrai lorsque le M4 ef
 volatile bool *M4work_pntr = &M4work;     //N'est pas utilisé pour le moment mais pourrait être utile
 
 long task_start_time = 0; //variable to store the time needed to perform a given task
+//Values received from the M4 core
+long ZPos = 0;
+long ZTarget = 0;
+long ZPosEnc = 0;
+long MPos = 0;
+long MTarget = 0;
+long MPosEnc = 0;
+long CPos = 0;
+long CTarget = 0;
+long CPosEnc = 0;
+
 //Camera related variables --------------------------------------------------------------
 const int imgH = 240; //X dimension
 const int imgW = 320; //Y dimension
@@ -116,7 +127,7 @@ void setup() {
   ExtClk = F_CPU/10;
   //init serial port
   Serial.begin(115200);
-  while(!Serial);
+  //while(!Serial);
   Serial.println("Setup start");
   //DRIVER_ON; //Should check if this is necessary for the setup
   RPC.begin();
@@ -124,6 +135,7 @@ void setup() {
   RPC.bind("decapDone",decapDone);
   RPC.bind("recapDone",recapDone);
   RPC.bind("initDone",initDone);
+  RPC.bind("ZCurrentPos",ZCurrentPos);
   /*
   //Init the camera
   if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
@@ -162,7 +174,7 @@ void setup() {
 void loop() {
   LEDB_ON;
   delay(200);
-  /*
+  
   EthernetClient client = server.available();
   EthernetClient* client_pntr = &client;
   if(client){ //A client tries to connect 
@@ -221,6 +233,16 @@ void loop() {
           answerHttp(client_pntr,currentLine);
           moveZ();
         }
+        else if(currentLine.endsWith("moveM")){
+          answerHttp(client_pntr,currentLine);
+          moveM();
+        }
+
+        else if(currentLine.endsWith("moveC")){
+          answerHttp(client_pntr,currentLine);
+          moveC();
+        }
+        
         
       }//if(client.available())
       else if(millis()-time_start > TIMEOUT_ETH){
@@ -232,10 +254,10 @@ void loop() {
     client.stop();
     
   }//if(client)
-  */   
+  
   LEDB_OFF;
   delay(200);
-
+  updateM4();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
   //if(*M4work_pntr){
   if(1){

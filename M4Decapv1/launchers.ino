@@ -38,3 +38,27 @@ bool launchMoveC(){
   *Pstate = 13;
   return true;
 }
+
+long launchZPos() {
+  *Pstate = 31;
+  return ZPos;
+}
+
+long launchMPos() {
+  *Pstate = 32;
+  return MPos;
+}
+
+long launchCPos() {
+  *Pstate = 33;
+  return CPos;
+}
+long launchZTarget() {
+  return ZTarget;
+}
+long launchMTarget() {
+  return MTarget;
+}
+long launchCTarget() {
+  return CTarget;
+}

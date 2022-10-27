@@ -67,6 +67,11 @@ void homePage(EthernetClient* client_pntr){
   client_pntr->print("<p>Current Status : ");client_pntr->print(state);
   client_pntr->print("<img src=\"data:image/png;base64," + (state==3 ? yellow_dot:(state<2 ?green_dot:red_dot)) + "\" alt=\"Red dot\" />");
   client_pntr->println("</p>");
+  client_pntr->print("<p style=\"text-align:right\">");
+  client_pntr->print("<strong> Z position : ");client_pntr->print(ZPos);client_pntr->print("</strong> Z target : ");client_pntr->print(ZTarget);client_pntr->print(" Z Encoder : ");client_pntr->print(ZPosEnc);
+  client_pntr->print("<br /><strong> M position : ");client_pntr->print(MPos);client_pntr->print("</strong> M target : ");client_pntr->print(MTarget);client_pntr->print(" M Encoder : ");client_pntr->print(MPosEnc);
+  client_pntr->print("<br /><strong> C position : ");client_pntr->print(CPos);client_pntr->print("</strong> C target : ");client_pntr->print(CTarget);client_pntr->print(" C Encoder : ");client_pntr->print(CPosEnc);
+  client_pntr->println("</p>");
   client_pntr->print("<p>Time since last reset : " + String(c));client_pntr->println("</p>");
   client_pntr->println("<p><a href=\"http://" + StringIP + "/initialize\">Initialize</a></p>");
   client_pntr->println("<p><a href=\"http://" + StringIP + "/decap\">Decap</a></p>");

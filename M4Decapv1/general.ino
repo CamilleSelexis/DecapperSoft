@@ -6,6 +6,12 @@ void init_RPC(){
   RPC.bind("MoveZ",launchMoveZ);
   RPC.bind("MoveM",launchMoveM);
   RPC.bind("MoveC",launchMoveC);
+  RPC.bind("ZPos",launchZPos);
+  RPC.bind("MPos",launchMPos);
+  RPC.bind("CPos",launchCPos);
+  RPC.bind("ZTarget",launchZTarget);
+  RPC.bind("MTarget",launchMTarget);
+  RPC.bind("CTarget",launchCTarget);
   /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);
@@ -41,4 +47,19 @@ void getCurrentPosition(){
   long actualM = floor((turn*360+angle)*USTEPS/1.8);
 
   ControllerM.setCurrentPos(actualM);
+}
+
+void updateValues(){
+  ZPos = ControllerZ.getCurrentPos();
+  delay(20);
+  ZTarget = ControllerZ.getCurrentTarget();
+  delay(20);
+  MPos = ControllerM.getCurrentPos();
+  delay(20);
+  MTarget = ControllerM.getCurrentTarget();
+  delay(20);
+  CPos = ControllerC.getCurrentPos();
+  delay(20);
+  CTarget = ControllerC.getCurrentTarget();
+  delay(20);
 }
