@@ -12,6 +12,9 @@ void init_RPC(){
   RPC.bind("ZTarget",launchZTarget);
   RPC.bind("MTarget",launchMTarget);
   RPC.bind("CTarget",launchCTarget);
+  RPC.bind("ZPosEnc",launchZPosEnc);
+  RPC.bind("MPosEnc",launchMPosEnc);
+  RPC.bind("CPosEnc",launchCPosEnc);
   /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);
@@ -51,15 +54,14 @@ void getCurrentPosition(){
 
 void updateValues(){
   ZPos = ControllerZ.getCurrentPos();
-  delay(20);
   ZTarget = ControllerZ.getCurrentTarget();
+  ZPosEnc = ControllerZ.getEncoderPos();
   delay(20);
   MPos = ControllerM.getCurrentPos();
-  delay(20);
   MTarget = ControllerM.getCurrentTarget();
+  MPosEnc = ControllerM.getEncoderPos();
   delay(20);
   CPos = ControllerC.getCurrentPos();
-  delay(20);
   CTarget = ControllerC.getCurrentTarget();
-  delay(20);
+  CPosEnc = ControllerC.getEncoderPos();
 }

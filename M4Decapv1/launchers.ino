@@ -38,19 +38,16 @@ bool launchMoveC(){
   *Pstate = 13;
   return true;
 }
-
+//Those functions are only used to transmit the current position/target of the 3 axis
 long launchZPos() {
-  *Pstate = 31;
   return ZPos;
 }
 
 long launchMPos() {
-  *Pstate = 32;
   return MPos;
 }
 
 long launchCPos() {
-  *Pstate = 33;
   return CPos;
 }
 long launchZTarget() {
@@ -61,4 +58,13 @@ long launchMTarget() {
 }
 long launchCTarget() {
   return CTarget;
+}
+long launchZPosEnc() {
+  return ZPosEnc;
+}
+long launchMPosEnc() {
+  return MPosEnc;
+}
+long launchCPosEnc() {
+  return CPosEnc;
 }

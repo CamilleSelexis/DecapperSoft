@@ -3,13 +3,19 @@
 //Calls GetPos() and check its reliability over 2 iterations
 long finalPos() {
   //cam.standby(false);
+  //Init the camera
+  if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
+    Serial.println("Cam initialised");//initialise the camera
+  }
+  else{
+    Serial.println("Cam failed to initialize");
+  }
+  delay(100);
+  //
   uint8_t tol = 5;
+  long temp1 = 0;
+  long temp2 = tol + 1;
   uint8_t i = 0;
-  delay(50);
-  long temp1 = detectEdges();
-  delay(50);
-  long temp2 = detectEdges();
-  delay(50);
   while(abs(temp1-temp2)>tol && i<20){
     temp1 = detectEdges();
     delay(50);

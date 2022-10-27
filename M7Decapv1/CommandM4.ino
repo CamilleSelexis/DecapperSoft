@@ -35,25 +35,16 @@ void Recap(){
 void moveZ(){
   task_start_time = millis();
   Serial.println("Moving Z axis");
-  LEDR_ON;
-  DRIVER_ON;
-  RELAY_ON;
   *M4work_pntr = RPC.call("MoveZ").as<bool>();
 }
 void moveM(){
   task_start_time = millis();
   Serial.println("Moving M axis");
-  LEDR_ON;
-  DRIVER_ON;
-  RELAY_ON;
   *M4work_pntr = RPC.call("MoveM").as<bool>();
 }
 void moveC(){
   task_start_time = millis();
   Serial.println("Moving C axis");
-  LEDR_ON;
-  DRIVER_ON;
-  RELAY_ON;
   *M4work_pntr = RPC.call("MoveC").as<bool>();
 }
 

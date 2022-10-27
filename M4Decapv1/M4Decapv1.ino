@@ -74,6 +74,9 @@ long CPos = 0;
 long ZTarget = 0;
 long MTarget = 0;
 long CTarget = 0;
+long ZPosEnc = 0;
+long MPosEnc = 0;
+long CPosEnc = 0;
 //Declare the 3 Drivers
 TMC4361A ControllerZ(CS1,TGT1);
 TMC4361A ControllerM(CS2,TGT2);

@@ -58,7 +58,7 @@ void homePage(EthernetClient* client_pntr){
   client_pntr->println("HTTP/1.1 200 OK");
   client_pntr->println("Content-Type: text/html");
   client_pntr->println("Connection: close");  // the connection will be closed after completion of the response
-  client_pntr->println("Refresh: 10");  // refresh the page automatically every 5 sec
+  client_pntr->println("Refresh: 10");  // refresh the page automatically every 10 sec
   client_pntr->println();
   client_pntr->println("<!DOCTYPE HTML>");
   client_pntr->println("<html>");

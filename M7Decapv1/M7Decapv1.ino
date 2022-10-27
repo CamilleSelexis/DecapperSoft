@@ -164,8 +164,8 @@ void setup() {
   // Start the server
   server.begin();           //"server" is the name of the object for comunication through ethernet
   Serial.print("Ethernet server connected. Server is at ");
-  Serial.println(Ethernet.localIP());         //Gives the local IP through serial com
-  
+  //Serial.println(Ethernet.localIP());         //Gives the local IP through serial com
+  Serial.println(StringIP);
   
   LEDG_OFF;
   Serial.println("Setup done");
@@ -258,6 +258,7 @@ void loop() {
   LEDB_OFF;
   delay(200);
   updateM4();
+  updateEncoder();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
   //if(*M4work_pntr){
   if(1){
