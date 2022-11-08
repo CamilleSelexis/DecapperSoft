@@ -42,14 +42,13 @@ bool launchMoveC(){
 long launchZPos() {
   return ZPos;
 }
-
 long launchMPos() {
   return MPos;
 }
-
 long launchCPos() {
   return CPos;
 }
+
 long launchZTarget() {
   return ZTarget;
 }
@@ -59,6 +58,7 @@ long launchMTarget() {
 long launchCTarget() {
   return CTarget;
 }
+
 long launchZPosEnc() {
   return ZPosEnc;
 }

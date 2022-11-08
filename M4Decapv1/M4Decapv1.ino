@@ -28,7 +28,9 @@
 #define MISO_PIN  D10
 #define SCK_PIN   D9
 #define CLK16_PIN D1
-
+#define M4RPC_PIN D2
+#define disableRPC digitalWrite(M4RPC_PIN,LOW)
+#define enableRPC digitalWrite(M4RPC_PIN,HIGH)
 
 #define TIMEOUT_MVMT 30000 //30 sec
 #define TIMEOUT 10000 //10 sec
@@ -100,6 +102,7 @@ void setup() {
     RPC.println("Good day to you sir");
   //getCurrentPosition();
   digitalWrite(LEDR,HIGH);
+  digitalWrite(M4PRPC_PIN,HIGH);
   delay(1000);
   //pin_init();
 }

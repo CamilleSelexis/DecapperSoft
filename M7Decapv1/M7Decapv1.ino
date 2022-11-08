@@ -30,6 +30,7 @@
 #define SCK_PIN   D9
 #define CLK16_PIN D1
 
+#define M4RPC_PIN D2 //Active High - M7 can read this pin to know if RPC comm is possible
 #define RELAY_PIN D0
 
 #define F_CPU       200000000
@@ -256,9 +257,9 @@ void loop() {
   }//if(client)
   
   LEDB_OFF;
-  delay(200);
+  delay(1000);
   updateM4();
-  updateEncoder();
+  //updateEncoder();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
   //if(*M4work_pntr){
   if(1){
