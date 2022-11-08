@@ -2,7 +2,6 @@
 // Could add a term that is proportional to its distance from the middle
 //Calls GetPos() and check its reliability over 2 iterations
 long finalPos() {
-  //cam.standby(false);
   //Init the camera
   if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
     Serial.println("Cam initialised");//initialise the camera

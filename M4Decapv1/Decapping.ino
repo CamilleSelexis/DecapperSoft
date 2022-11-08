@@ -92,6 +92,7 @@ bool ScrewCap(){
   return true;
 }
 bool decap(){
+  pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
   if(!ApproachFlask()) return false;
   if(!AlignCap(*PCpos)) return false;
   if(!UnscrewCap()) return false;
