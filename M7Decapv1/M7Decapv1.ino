@@ -137,6 +137,7 @@ void setup() {
   RPC.bind("recapDone",recapDone);
   RPC.bind("initDone",initDone);
   RPC.bind("ZCurrentPos",ZCurrentPos);
+  RPC.bind("currentMotorPositionRPC",currentMotorPositionRPC);
   /*
   //Init the camera
   if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){

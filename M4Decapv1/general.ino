@@ -60,8 +60,13 @@ void updateValues(){
   MPos = ControllerM.getCurrentPos();
   MTarget = ControllerM.getCurrentTarget();
   MPosEnc = ControllerM.getEncoderPos();
+  //RPC.print("M encoder position : ");RPC.print(MPosEnc); RPC.print("M angle : ");RPC.print(ControllerM.getEncoderAngle());RPC.print(" M turn : ");RPC.println(ControllerM.getEncoderTurn());
   delay(20);
   CPos = ControllerC.getCurrentPos();
   CTarget = ControllerC.getCurrentTarget();
   CPosEnc = ControllerC.getEncoderPos();
+  delay(20);
+  //if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget).as<bool>())
+  if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget,ZPosEnc,MPosEnc,CPosEnc).as<bool>())
+    RPC.println("Error sending motor position");
 }

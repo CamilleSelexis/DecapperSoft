@@ -1,7 +1,6 @@
 //Contains functions setting target positions for the 3 motors
 //Open the claws and lower the arm
 bool ApproachFlask(){
-  disableRPC;
   RPC.println("Going closer to the flask");
   ControllerZ.setTarget(Znear);
   ControllerM.setTarget(Mopen);
@@ -16,7 +15,6 @@ bool ApproachFlask(){
 
 //Align the claws with the line on the cap
 bool AlignCap(int capPos){
-  disableRPC;
   RPC.println("Aligning the claws with the cap");
   ControllerC.setTargetRelative(capPos);
   if(!motor_running){
@@ -28,22 +26,18 @@ bool AlignCap(int capPos){
 
 //perform the unscrewing movement -> lower the arm, close the claws, turn CCW while going up
 bool UnscrewCap(){
-  disableRPC;
   RPC.println("Press the cap");
   ControllerZ.setTarget(capHeight);
   if(!motor_running){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  disableRPC;
   RPC.println("Hold the cap");
   ControllerM.setTarget(capHold);
   if(!motor_running){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-
-  disableRPC;
   RPC.println("Unscrewing of the cap");
   setScrewingSpeed();
   ControllerZ.setTarget(capDecapZ);
@@ -59,7 +53,6 @@ bool UnscrewCap(){
 
 //Go to the standby position
 bool goToStandby() {
-  disableRPC;
   ControllerZ.setTarget(standbyZ);
   ControllerC.setTarget(standbyC);
   ControllerM.setTarget(standbyM);
@@ -74,14 +67,12 @@ bool goToStandby() {
 
 //Perform screwing movement, lower the arm, turn CW while going down, open the claws
 bool ScrewCap(){
-  disableRPC;
   RPC.println("Press the cap");
   ControllerZ.setTarget(screwStartZ);
   if(!motor_running){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  disableRPC;
   RPC.println("Screwing of the cap");
   setScrewingSpeed();
   ControllerZ.setTarget(capDecapZ);
@@ -90,7 +81,6 @@ bool ScrewCap(){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  disableRPC;
   RPC.println("Release the cap");
   ControllerM.setTarget(capRelease);
   if(!motor_running){
@@ -125,7 +115,6 @@ bool init_driver(TMC4361A controller){
   for(int i = 1; i<5; i++){
     float init_angle = controller.getEncoderAngle();
     float init_turn = controller.getEncoderTurn();
-    disableRPC;
     controller.setVMAX(200*256/(5-i),0);//About 1/5 turn per sec
     controller.setTargetRelative(50*256*i*(pow(-1,i)));//Turn for 1/4 turn
     while(!controller.isTargetReached()); //Wait for the motor to turn
@@ -142,7 +131,6 @@ bool motor_running(){
   digitalWrite(LEDR,LOW);
   long time_start = millis();
   long time_update = time_start;
-  enableRPC;
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
     if(millis()-time_start > TIMEOUT_MVMT){
       RPC.println("Something is wrong and I can feel it");
@@ -163,21 +151,18 @@ bool motor_running(){
 }
 
 void moveZ(){
-  disableRPC;
   ControllerZ.setTargetRelative(51200);
   if(!motor_running())
     RPC.println("Failed the move");
 }
 
 void moveM(){
-  disableRPC;
   ControllerM.setTargetRelative(51200);
   if(!motor_running())
     RPC.println("Failed the move");
 }
 
 void moveC(){
-  disableRPC;
   ControllerC.setTargetRelative(51200);
   if(!motor_running())
     RPC.println("Failed the move");

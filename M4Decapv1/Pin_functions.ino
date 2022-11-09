@@ -1,8 +1,6 @@
 //Set the pin as output or input
 void pin_init() {
 
-  pinMode(M4RPC_PIN,OUTPUT);
-  digitalWrite(M4RPC_PIN,LOW);
   pinMode(CS1, OUTPUT);
   digitalWrite(CS1, HIGH);
   pinMode(CS2, OUTPUT);

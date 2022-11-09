@@ -50,20 +50,16 @@ void moveC(){
 
 void updateM4() {
   //Only ask M4 for an update if he is available
-  if(digitalRead(M4RPC_PIN)){
-    ZPos = RPC.call("ZPos").as<long>();
-    ZTarget = RPC.call("ZTarget").as<long>();
-    MPos = RPC.call("MPos").as<long>();
-    MTarget = RPC.call("MTarget").as<long>();
-    CPos = RPC.call("CPos").as<long>();
-    CTarget = RPC.call("CTarget").as<long>();
-  }
+  ZPos = RPC.call("ZPos").as<long>();
+  ZTarget = RPC.call("ZTarget").as<long>();
+  MPos = RPC.call("MPos").as<long>();
+  MTarget = RPC.call("MTarget").as<long>();
+  CPos = RPC.call("CPos").as<long>();
+  CTarget = RPC.call("CTarget").as<long>();
 }
 
 void updateEncoder() {
-  if(digitalRead(M4RPC_PIN)){
-    ZPosEnc = RPC.call("ZPosEnc").as<long>();
-    MPosEnc = RPC.call("MPosEnc").as<long>();
-    CPosEnc = RPC.call("CPosEnc").as<long>();
-  }
+  ZPosEnc = RPC.call("ZPosEnc").as<long>();
+  MPosEnc = RPC.call("MPosEnc").as<long>();
+  CPosEnc = RPC.call("CPosEnc").as<long>();
 }
