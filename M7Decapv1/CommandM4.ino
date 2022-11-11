@@ -47,7 +47,43 @@ void moveC(){
   Serial.println("Moving C axis");
   *M4work_pntr = RPC.call("MoveC").as<bool>();
 }
-
+bool relMove(String currentLine){
+  long value = 0;
+  int valSize = currentLine.length()-8; //Gives the number of digit of the value
+  char axis = currentLine[valSize]; //Gives which axis is concerned
+  Serial.println(axis);
+  if(!(axis == 'Z' || axis == 'M' || axis == 'C')) return false;
+  for(int i =2 ; i<valSize;i++){ //First char is \ second give the sign
+    value = value*10 + currentLine[i]-48;
+  }
+  if(currentLine[1] == 45)  value = value*(-1);
+  else if(currentLine[1] != 43){ value = 0; return false;}
+  if(abs(value)>1000000){
+    Serial.println("Value out of range");
+    value = 0;
+    return false;
+  }
+  Serial.print("Computed value = ");Serial.println(value);
+  switch(axis){
+    case 'Z':
+      if(!RPC.call("ZrelMove",value).as<bool>())
+        Serial.println("Error calling ZrelMove");
+      break;
+    case 'M':
+      if(!RPC.call("MrelMove",value).as<bool>())
+        Serial.println("Error calling ZrelMove");
+      break;
+    case 'C':
+      if(!RPC.call("CrelMove",value).as<bool>())
+        Serial.println("Error calling ZrelMove");
+      break;
+    default :
+      Serial.println("Unknown axis");
+      break;
+      return false;
+  }
+  return true;
+}
 void updateM4() {
   //Only ask M4 for an update if he is available
   ZPos = RPC.call("ZPos").as<long>();

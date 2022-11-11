@@ -3,18 +3,9 @@ void init_RPC(){
   RPC.bind("Decap",launchDecap);
   RPC.bind("Recap",launchRecap);
   RPC.bind("InitDrivers",launchInitDrivers);
-  RPC.bind("MoveZ",launchMoveZ);
-  RPC.bind("MoveM",launchMoveM);
-  RPC.bind("MoveC",launchMoveC);
-  RPC.bind("ZPos",launchZPos);
-  RPC.bind("MPos",launchMPos);
-  RPC.bind("CPos",launchCPos);
-  RPC.bind("ZTarget",launchZTarget);
-  RPC.bind("MTarget",launchMTarget);
-  RPC.bind("CTarget",launchCTarget);
-  RPC.bind("ZPosEnc",launchZPosEnc);
-  RPC.bind("MPosEnc",launchMPosEnc);
-  RPC.bind("CPosEnc",launchCPosEnc);
+  RPC.bind("launchZrelMove",ZrelMove);
+  RPC.bind("launchMrelMove",MrelMove);
+  RPC.bind("launchCrelMove",CrelMove);
   /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);
@@ -56,17 +47,20 @@ void updateValues(){
   ZPos = ControllerZ.getCurrentPos();
   ZTarget = ControllerZ.getCurrentTarget();
   ZPosEnc = ControllerZ.getEncoderPos();
+  ZAngleEnc = ControllerZ.getEncoderAngle();
   delay(20);
   MPos = ControllerM.getCurrentPos();
   MTarget = ControllerM.getCurrentTarget();
   MPosEnc = ControllerM.getEncoderPos();
+  MAngleEnc = ControllerM.getEncoderAngle();
   //RPC.print("M encoder position : ");RPC.print(MPosEnc); RPC.print("M angle : ");RPC.print(ControllerM.getEncoderAngle());RPC.print(" M turn : ");RPC.println(ControllerM.getEncoderTurn());
   delay(20);
   CPos = ControllerC.getCurrentPos();
   CTarget = ControllerC.getCurrentTarget();
   CPosEnc = ControllerC.getEncoderPos();
+  CAngleEnc = ControllerC.getEncoderAngle();
   delay(20);
   //if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget).as<bool>())
-  if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget,ZPosEnc,MPosEnc,CPosEnc).as<bool>())
+  if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget,ZPosEnc,MPosEnc,CPosEnc,ZAngleEnc,MAngleEnc,CAngleEnc).as<bool>())
     RPC.println("Error sending motor position");
 }

@@ -26,45 +26,20 @@ bool launchReadParams() {
   return true;
 }
 
-bool launchMoveZ(){
+bool launchZrelMove(long value){
   *Pstate = 11;
+  *pZvalue = value;
   return true;
 }
-bool launchMoveM(){
+
+bool launchMrelMove(long value){
   *Pstate = 12;
+  *pMvalue = value;
   return true;
 }
-bool launchMoveC(){
+
+bool launchCrelMove(long value){
   *Pstate = 13;
+  *pCvalue = value;
   return true;
-}
-//Those functions are only used to transmit the current position/target of the 3 axis
-long launchZPos() {
-  return ZPos;
-}
-long launchMPos() {
-  return MPos;
-}
-long launchCPos() {
-  return CPos;
-}
-
-long launchZTarget() {
-  return ZTarget;
-}
-long launchMTarget() {
-  return MTarget;
-}
-long launchCTarget() {
-  return CTarget;
-}
-
-long launchZPosEnc() {
-  return ZPosEnc;
-}
-long launchMPosEnc() {
-  return MPosEnc;
-}
-long launchCPosEnc() {
-  return CPosEnc;
 }

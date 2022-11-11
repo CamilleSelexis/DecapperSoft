@@ -68,14 +68,24 @@ uint32_t capDecapC = 2000*USTEPS;
 
 //Current motor values
 long ZPos = 0;
-long MPos = 0;
-long CPos = 0;
 long ZTarget = 0;
-long MTarget = 0;
-long CTarget = 0;
 long ZPosEnc = 0;
+long ZAngleEnc = 0;
+long MPos = 0;
+long MTarget = 0;
 long MPosEnc = 0;
+long MAngleEnc = 0;
+long CPos = 0;
+long CTarget = 0;
 long CPosEnc = 0;
+long CAngleEnc = 0;
+
+long Zvalue = 0;
+long *pZvalue = &Zvalue;
+long Mvalue = 0;
+long *pMvalue = &Mvalue;
+long Cvalue = 0;
+long *pCvalue = &Cvalue;
 //Declare the 3 Drivers
 TMC4361A ControllerZ(CS1,TGT1);
 TMC4361A ControllerM(CS2,TGT2);
@@ -145,23 +155,23 @@ void loop() {
       break;
     case 5: //read parameters
       break;
-    case 11: //manual Z move
-      RPC.println("M4: Moving Axis Z");
-      moveZ();
+    case 11: //manual Z relMove
+      RPC.print("M4: Moving Axis Z by ");RPC.println(Zvalue);
+      ZrelMove(Zvalue);
       if(!RPC.call("M4TaskCompleted").as<bool>())
           RPC.println("Error sending task completed");
       state = 0; //return to default state
       break;
-    case 12: //Manual M move
-      RPC.println("M4: Moving Axis M");
-      moveM();
+    case 12: //Manual M relMove
+      RPC.print("M4: Moving Axis M");;RPC.println(Mvalue);
+      MrelMove(Mvalue);
       if(!RPC.call("M4TaskCompleted").as<bool>())
           RPC.println("Error sending task completed");
       state = 0; //return to default state
       break;
-    case 13: //Manual C move
-      RPC.println("M4: Moving Axis C");
-      moveC();
+    case 13: //Manual C relMove
+      RPC.print("M4: Moving Axis C");;RPC.println(Cvalue);
+      CrelMove(Cvalue);
       if(!RPC.call("M4TaskCompleted").as<bool>())
           RPC.println("Error sending task completed");
       state = 0; //return to default state

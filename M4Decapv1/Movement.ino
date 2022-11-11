@@ -150,24 +150,51 @@ bool motor_running(){
   return true;
 }
 
-void moveZ(){
-  ControllerZ.setTargetRelative(51200);
-  if(!motor_running())
-    RPC.println("Failed the move");
-}
+//void moveZ(){
+//  ControllerZ.setTargetRelative(51200);
+//  if(!motor_running())
+//    RPC.println("Failed the move");
+//}
+//
+//void moveM(){
+//  ControllerM.setTargetRelative(51200);
+//  if(!motor_running())
+//    RPC.println("Failed the move");
+//}
+//
+//void moveC(){
+//  ControllerC.setTargetRelative(51200);
+//  if(!motor_running())
+//    RPC.println("Failed the move");
+//}
 
-void moveM(){
-  ControllerM.setTargetRelative(51200);
-  if(!motor_running())
-    RPC.println("Failed the move");
+bool ZrelMove(long value){
+  RPC.print("Z will move by ");RPC.println(value);
+  ControllerZ.setTargetRelative(value);
+  if(!motor_running()){
+    RPC.println("Failed the relative move on Z");
+    return false;
+  }
+  return true;
 }
-
-void moveC(){
-  ControllerC.setTargetRelative(51200);
-  if(!motor_running())
-    RPC.println("Failed the move");
+bool MrelMove(long value){
+  RPC.print("M will move by ");RPC.println(value);
+  ControllerM.setTargetRelative(value);
+  if(!motor_running()){
+    RPC.println("Failed the relative move on M");
+    return false;
+  }
+  return true;
 }
-
+bool CrelMove(long value){
+  RPC.print("C will move by ");RPC.println(value);
+  ControllerC.setTargetRelative(value);
+  if(!motor_running()){
+    RPC.println("Failed the relative move on C");
+    return false;
+  }
+  return true;
+}
 void test_motors(){
   if(ControllerZ.isTargetReached()){
       RPC.println("Z target reached so setting new target");
