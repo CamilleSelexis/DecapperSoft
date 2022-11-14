@@ -71,16 +71,18 @@ long task_start_time = 0; //variable to store the time needed to perform a given
 long ZPos = 0;
 long ZTarget = 0;
 long ZPosEnc = 0;
-long ZAngleEnc = 0;
+float ZAngleEnc = 0;
+float ZTurnEnc = 0;
 long MPos = 0;
 long MTarget = 0;
 long MPosEnc = 0;
-long MAngleEnc = 0;
+float MAngleEnc = 0;
+float MTurnEnc = 0;
 long CPos = 0;
 long CTarget = 0;
 long CPosEnc = 0;
-long CAngleEnc = 0;
-
+float CAngleEnc = 0;
+float CTurnEnc = 0;
 //Camera related variables --------------------------------------------------------------
 const int imgH = 240; //X dimension
 const int imgW = 320; //Y dimension
@@ -267,8 +269,6 @@ void loop() {
   
   LEDB_OFF;
   delay(250);
-  //updateM4();
-  //updateEncoder();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
   //if(*M4work_pntr){
   if(1){

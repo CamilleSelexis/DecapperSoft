@@ -141,6 +141,11 @@ bool motor_running(){
       return false;
     }
     if(millis()-time_update > TIME_UPDATE){
+      /*if(!encoderCheck(ControllerM,MAngleEnc,MTurnEnc,MPos)){
+        ControllerM.setTargetRelative(0);
+        RPC.println("Encoder mismatch");
+        return false;
+      }*/
       updateValues();
       time_update = millis();
     }
@@ -149,24 +154,6 @@ bool motor_running(){
   RPC.print("Move took ");RPC.print(millis()-time_start);RPC.println(" ms");
   return true;
 }
-
-//void moveZ(){
-//  ControllerZ.setTargetRelative(51200);
-//  if(!motor_running())
-//    RPC.println("Failed the move");
-//}
-//
-//void moveM(){
-//  ControllerM.setTargetRelative(51200);
-//  if(!motor_running())
-//    RPC.println("Failed the move");
-//}
-//
-//void moveC(){
-//  ControllerC.setTargetRelative(51200);
-//  if(!motor_running())
-//    RPC.println("Failed the move");
-//}
 
 bool ZrelMove(long value){
   RPC.print("Z will move by ");RPC.println(value);
@@ -217,4 +204,16 @@ void test_motors(){
       RPC.print("C current position :");RPC.println(ControllerC.getCurrentPos());
       RPC.print("C current target :");RPC.println(ControllerC.getCurrentTarget());
       }
+}
+
+bool encoderCheck(TMC4361A controller, float initAngle, float initTurn,long initPos){
+  float angle = controller.getEncoderAngle();
+  float turn = controller.getEncoderTurn();
+
+  long motorPos = controller.getCurrentPos();
+  long motorTarget = controller.getCurrentTarget();
+
+  if((abs(angle-initAngle)+abs(turn-initTurn)*360)*200*256>(abs(motorPos-initPos)+512)) //3.2° tolerance
+    return false;
+  return true;
 }

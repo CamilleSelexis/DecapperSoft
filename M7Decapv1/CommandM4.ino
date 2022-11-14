@@ -51,7 +51,6 @@ bool relMove(String currentLine){
   long value = 0;
   int valSize = currentLine.length()-8; //Gives the number of digit of the value
   char axis = currentLine[valSize]; //Gives which axis is concerned
-  Serial.println(axis);
   if(!(axis == 'Z' || axis == 'M' || axis == 'C')) return false;
   for(int i =2 ; i<valSize;i++){ //First char is \ second give the sign
     value = value*10 + currentLine[i]-48;
@@ -63,17 +62,19 @@ bool relMove(String currentLine){
     value = 0;
     return false;
   }
-  Serial.print("Computed value = ");Serial.println(value);
   switch(axis){
     case 'Z':
+    Serial.print("Calling ZrelMove with value : ");Serial.println(value);
       if(!RPC.call("ZrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
       break;
     case 'M':
+    Serial.print("Calling MrelMove with value : ");Serial.println(value);
       if(!RPC.call("MrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
       break;
     case 'C':
+    Serial.print("Calling CrelMove with value : ");Serial.println(value);
       if(!RPC.call("CrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
       break;
@@ -83,19 +84,4 @@ bool relMove(String currentLine){
       return false;
   }
   return true;
-}
-void updateM4() {
-  //Only ask M4 for an update if he is available
-  ZPos = RPC.call("ZPos").as<long>();
-  ZTarget = RPC.call("ZTarget").as<long>();
-  MPos = RPC.call("MPos").as<long>();
-  MTarget = RPC.call("MTarget").as<long>();
-  CPos = RPC.call("CPos").as<long>();
-  CTarget = RPC.call("CTarget").as<long>();
-}
-
-void updateEncoder() {
-  ZPosEnc = RPC.call("ZPosEnc").as<long>();
-  MPosEnc = RPC.call("MPosEnc").as<long>();
-  CPosEnc = RPC.call("CPosEnc").as<long>();
 }

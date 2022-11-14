@@ -31,7 +31,7 @@
 
 #define TIMEOUT_MVMT 30000 //30 sec
 #define TIMEOUT 10000 //10 sec
-#define TIME_UPDATE 500 //500 ms -> we want to update position and target at this rate
+#define TIME_UPDATE 100 //100 ms -> we want to update position and target at this rate
 #define SCREW_TIME 6 //6 sec to screw/unscrew the cap
 
 #define USTEPS  256 //number of usteps by full steps
@@ -70,15 +70,18 @@ uint32_t capDecapC = 2000*USTEPS;
 long ZPos = 0;
 long ZTarget = 0;
 long ZPosEnc = 0;
-long ZAngleEnc = 0;
+float ZAngleEnc = 0;
+float ZTurnEnc = 0;
 long MPos = 0;
 long MTarget = 0;
 long MPosEnc = 0;
-long MAngleEnc = 0;
+float MAngleEnc = 0;
+float MTurnEnc = 0;
 long CPos = 0;
 long CTarget = 0;
 long CPosEnc = 0;
-long CAngleEnc = 0;
+float CAngleEnc = 0;
+float CTurnEnc = 0;
 
 long Zvalue = 0;
 long *pZvalue = &Zvalue;
