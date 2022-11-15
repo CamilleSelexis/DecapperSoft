@@ -110,23 +110,39 @@ bool recap(){
 }
 
 //Check that the drivers are operating correctly and that the encoder return correct values
-bool init_driver(TMC4361A controller){
+bool init_driver(TMC4361A *pController){ //Not robust if starting pos is close to 90 or 270 °
   //Sequentially check the drivers
-  for(int i = 1; i<5; i++){
-    float init_angle = controller.getEncoderAngle();
-    float init_turn = controller.getEncoderTurn();
-    controller.setVMAX(200*256/(5-i),0);//About 1/5 turn per sec
-    controller.setTargetRelative(50*256*i*(pow(-1,i)));//Turn for 1/4 turn
-    while(!controller.isTargetReached()); //Wait for the motor to turn
-    float angle_diff = abs(controller.getEncoderAngle()*controller.getEncoderTurn()-init_angle*init_turn);
-    if((90*i)-10< angle_diff || angle_diff > (90*i)-10){
-      RPC.println("More than 10° error");
+  float init_angle = pController->getEncoderAngle();
+  float target_angle = 0;
+  float tolerance = 5; //5°tolerance = 256*200/360*5 =~ 700 uSteps
+  pController->setCurrentPos(0);
+  for(int i = 1; i<=3; i++){
+    //ControllerM.setVMAX(long(200*256*i/6),0);//About 1/6 turn per sec
+    switch(i){
+      case 1 : pController->setTarget(50*256); //-90 °
+       target_angle = init_angle + 90 - (init_angle>270?360:0);
+      break;
+      case 2 : pController->setTarget(50*256*(-1)); // 90°
+      target_angle = init_angle - 90 + (init_angle < 90?360:0);
+      
+      break;
+      case 3 : pController->setTarget(0); // 0°
+      target_angle = init_angle + 0;
+      break;
+    }
+    while(!pController->isTargetReached()); //Wait for the motor to turn
+    float new_angle = pController->getEncoderAngle(); //Should be equal to 90/0
+    RPC.print("angle_diff = ");RPC.println(abs(new_angle - target_angle));
+    if(abs(new_angle - target_angle) > tolerance){
+      RPC.print("Current Angle : " + String(pController->getEncoderAngle()));
+      RPC.println(" should be target_angle = " + String(target_angle));
       return false;
     }
   }
-  RPC.println("Encoder Z is in range");
+  RPC.println("Encoder is in range");
   return true;
 }//this function is called when a motor is running and returns true when each motor is done, return false if the movement timeouts (30 sec)
+
 bool motor_running(){
   digitalWrite(LEDR,LOW);
   long time_start = millis();

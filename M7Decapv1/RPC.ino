@@ -5,13 +5,16 @@ bool M4TaskCompleted(){
 }
 
 //Properly set the flags once the init is done
-bool initDone(){
+bool initDone(bool ZEnc, bool MEnc, bool CEnc){
   *M4work_pntr = false;
   *isInit_pntr = true;
   *capHeld_pntr = false;
   DRIVER_OFF;
   LEDR_OFF;
   RELAY_OFF;
+  Zstate = ZEnc;
+  Mstate = MEnc;
+  Cstate = CEnc;
   Serial.print("initDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   return true;
 }

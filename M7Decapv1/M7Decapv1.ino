@@ -83,6 +83,10 @@ long CTarget = 0;
 long CPosEnc = 0;
 float CAngleEnc = 0;
 float CTurnEnc = 0;
+
+bool Zstate = false;
+bool Mstate = false;
+bool Cstate = false;
 //Camera related variables --------------------------------------------------------------
 const int imgH = 240; //X dimension
 const int imgW = 320; //Y dimension
