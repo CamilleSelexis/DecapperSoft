@@ -174,7 +174,7 @@ void loop() {
       state = 0; //return to default state
       break;
     case 12: //Manual M relMove
-      RPC.print("M4: Moving Axis M");;RPC.println(Mvalue);
+      RPC.print("M4: M relMove");;RPC.println(Mvalue);
       MrelMove(Mvalue);
       if(!RPC.call("M4TaskCompleted").as<bool>())
           RPC.println("Error sending task completed");
@@ -211,6 +211,29 @@ void loop() {
       RPC.println(ControllerC.getCurrentPos());
       state = 0;
       break;
+    case 41:
+      RPC.print("M4 : setting Z VMAX");RPC.println(Zvalue);
+      ZsetVMAX(Zvalue);
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0; //return to default state
+    case 42:
+      RPC.print("M4 : setting M VMAX");RPC.println(Mvalue);
+      MsetVMAX(Mvalue);
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0; //return to default state
+    case 43:
+      RPC.print("M4 : setting C VMAX");RPC.println(Cvalue);
+      CsetVMAX(Cvalue);
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0; //return to default state
+    case 51:
+
+    case 52:
+
+    case 53:
     default:
       RPC.println("Wrong state");
       break;

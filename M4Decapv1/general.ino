@@ -6,6 +6,12 @@ void init_RPC(){
   RPC.bind("ZrelMove",launchZrelMove);
   RPC.bind("MrelMove",launchMrelMove);
   RPC.bind("CrelMove",launchCrelMove);
+  RPC.bind("ZsetVMAX",launchZsetVMAX);
+  RPC.bind("MsetVMAX",launchMsetVMAX);
+  RPC.bind("CsetVMAX",launchCsetVMAX);
+  RPC.bind("ZsetCurrentScaling",launchZsetCurrentScaling);
+  RPC.bind("MsetCurrentScaling",launchMsetCurrentScaling);
+  RPC.bind("CsetCurrentScaling",launchCsetCurrentScaling);
   /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);

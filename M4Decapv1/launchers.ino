@@ -43,3 +43,37 @@ bool launchCrelMove(long value){
   *pCvalue = value;
   return true;
 }
+
+bool launchZsetVMAX(long value){
+  *Pstate = 41;
+  *pZvalue = value;
+  return true;
+}
+
+bool launchMsetVMAX(long value){
+  *Pstate = 42;
+  *pMvalue = value;
+  return true;
+}
+
+bool launchCsetVMAX(long value){
+  *Pstate = 43;
+  *pCvalue = value;
+  return true;
+}
+
+bool launchZsetCurrentScaling(int value){
+  *Pstate = 51;
+  *pZvalue = value;
+  return true;
+}
+bool launchMsetCurrentScaling(int value){
+  *Pstate = 52;
+  *pMvalue = value;
+  return true;
+}
+bool launchCsetCurrentScaling(int value){
+  *Pstate = 53;
+  *pCvalue = value;
+  return true;
+}

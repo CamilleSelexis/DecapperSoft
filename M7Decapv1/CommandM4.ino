@@ -31,22 +31,6 @@ void Recap(){
   RELAY_ON;
   *M4work_pntr = RPC.call("Recap").as<bool>();
 }
-
-void moveZ(){
-  task_start_time = millis();
-  Serial.println("Moving Z axis");
-  *M4work_pntr = RPC.call("MoveZ").as<bool>();
-}
-void moveM(){
-  task_start_time = millis();
-  Serial.println("Moving M axis");
-  *M4work_pntr = RPC.call("MoveM").as<bool>();
-}
-void moveC(){
-  task_start_time = millis();
-  Serial.println("Moving C axis");
-  *M4work_pntr = RPC.call("MoveC").as<bool>();
-}
 bool relMove(String currentLine){
   long value = 0;
   int valSize = currentLine.length()-8; //Gives the number of digit of the value
@@ -77,6 +61,81 @@ bool relMove(String currentLine){
     Serial.print("Calling CrelMove with value : ");Serial.println(value);
       if(!RPC.call("CrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
+      break;
+    default :
+      Serial.println("Unknown axis");
+      break;
+      return false;
+  }
+  return true;
+}
+bool setVMAX(String currentLine){
+  long value= 0;
+  int valSize = currentLine.length()-8;
+  char axis = currentLine[valSize];
+  if(!(axis == 'Z' || axis == 'M' || axis == 'C')) return false;
+  for(int i=1; i<valSize; i++){
+    value = value*10 + currentLine[i]-48; // 48 is ASCII for 0
+  }
+  if(value > 1000000){
+    Serial.println("Value out of range");
+    value = 0;
+    return false;
+  }
+
+  switch(axis){
+    case 'Z':
+    Serial.print("Calling ZsetVMAX with value : ");Serial.println(value);
+      if(!RPC.call("ZsetVMAX",value).as<bool>())
+        Serial.println("Error calling ZsetVMAX");
+      break;
+    case 'M':
+    Serial.print("Calling MsetVMAX with value : ");Serial.println(value);
+      if(!RPC.call("MsetVMAX",value).as<bool>())
+        Serial.println("Error calling MsetVMAX");
+      break;
+    case 'C':
+    Serial.print("Calling CsetVMAX with value : ");Serial.println(value);
+      if(!RPC.call("CsetVMAX",value).as<bool>())
+        Serial.println("Error calling CsetVMAX");
+      break;
+    default :
+      Serial.println("Unknown axis");
+      break;
+      return false;
+  }
+  return true;
+}
+
+bool setCurrentScaling(String currentLine){
+  int value= 0;
+  int valSize = currentLine.length()-18;
+  char axis = currentLine[valSize];
+  if(!(axis == 'Z' || axis == 'M' || axis == 'C')) return false;
+  for(int i=1; i<valSize; i++){
+    value = value*10 + currentLine[i]-48; // 48 is ASCII for 0
+  }
+  if(value > 32){
+    Serial.println("Value out of range");
+    value = 0;
+    return false;
+  }
+
+  switch(axis){
+    case 'Z':
+    Serial.print("Calling ZsetCurrentScaling with value : ");Serial.println(value);
+      if(!RPC.call("ZsetCurrentScaling",value).as<bool>())
+        Serial.println("Error calling ZsetVMAX");
+      break;
+    case 'M':
+    Serial.print("Calling MsetCurrentScaling with value : ");Serial.println(value);
+      if(!RPC.call("MsetCurrentScaling",value).as<bool>())
+        Serial.println("Error calling MsetVMAX");
+      break;
+    case 'C':
+    Serial.print("Calling CsetCurrentScaling with value : ");Serial.println(value);
+      if(!RPC.call("CsetCurrentScaling",value).as<bool>())
+        Serial.println("Error calling CsetVMAX");
       break;
     default :
       Serial.println("Unknown axis");

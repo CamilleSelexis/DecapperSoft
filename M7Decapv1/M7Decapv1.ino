@@ -240,25 +240,22 @@ void loop() {
             Recap();
           }
         }
-        else if(currentLine.endsWith("moveZ")){
-          answerHttp(client_pntr,currentLine);
-          moveZ();
-        }
-        else if(currentLine.endsWith("moveM")){
-          answerHttp(client_pntr,currentLine);
-          moveM();
-        }
-
-        else if(currentLine.endsWith("moveC")){
-          answerHttp(client_pntr,currentLine);
-          moveC();
-        }
         else if(currentLine.endsWith("relMove")){ //relative move
           answerHttp(client_pntr,currentLine);
           if(!relMove(currentLine))
             Serial.println("Error calling relMove");
         }
-        
+
+        else if(currentLine.endsWith("setVMAX")){
+          answerHttp(client_pntr,currentLine);
+          if(!setVMAX(currentLine))
+            Serial.println("Error setting VMAX");
+        }
+        else if(currentLine.endsWith("setCurrentScaling")){
+          answerHttp(client_pntr,currentLine);
+          if(!setCurrentScaling(currentLine))
+            Serial.println("Error setting Current Scaling");
+        }
         
       }//if(client.available())
       else if(millis()-time_start > TIMEOUT_ETH){
