@@ -54,24 +54,27 @@ void updateValues(){
   ZTarget = ControllerZ.getCurrentTarget();
   ZPosEnc = ControllerZ.getEncoderPos();
   ZAngleEnc = ControllerZ.getEncoderAngle();
+  ZDevEnc = ControllerZ.getEncoderDev();
   ZTurnEnc = ControllerZ.getEncoderTurn();
   delay(20);
   MPos = ControllerM.getCurrentPos();
   MTarget = ControllerM.getCurrentTarget();
   MPosEnc = ControllerM.getEncoderPos();
   MAngleEnc = ControllerM.getEncoderAngle();
+  MDevEnc = ControllerM.getEncoderDev();
   MTurnEnc = ControllerM.getEncoderTurn();
-  //RPC.print("M encoder position : ");RPC.print(MPosEnc); RPC.print("M angle : ");RPC.print(ControllerM.getEncoderAngle());RPC.print(" M turn : ");RPC.println(ControllerM.getEncoderTurn());
   delay(20);
   CPos = ControllerC.getCurrentPos();
   CTarget = ControllerC.getCurrentTarget();
   CPosEnc = ControllerC.getEncoderPos();
   CAngleEnc = ControllerC.getEncoderAngle();
+  CDevEnc = ControllerC.getEncoderDev();
   CTurnEnc = ControllerC.getEncoderTurn();
   delay(20);
   //if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget).as<bool>())
   if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget,
                                         ZPosEnc,MPosEnc,CPosEnc,ZAngleEnc,MAngleEnc,CAngleEnc,
-                                        ZTurnEnc,MTurnEnc,CTurnEnc).as<bool>())
+                                        ZTurnEnc,MTurnEnc,CTurnEnc,
+                                        ZDevEnc,MDevEnc,CDevEnc).as<bool>())
     RPC.println("Error sending motor position");
 }

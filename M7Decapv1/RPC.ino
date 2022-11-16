@@ -49,7 +49,8 @@ bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC,
                             long ZTargetRPC, long MTargetRPC, long CTargetRPC,
                               long ZPosEncRPC, long MPosEncRPC, long CPosEncRPC,
                               float ZAngleEncRPC, float MAngleEncRPC, float CAngleEncRPC,
-                              float ZTurnEncRPC, float MTurnEncRPC, float CTurnEncRPC){
+                              float ZTurnEncRPC, float MTurnEncRPC, float CTurnEncRPC,
+                              long ZDevEncRPC, long MDevEncRPC, long CDevEncRPC){
   ZPos = ZPosRPC;
   MPos = MPosRPC;
   CPos = CPosRPC;
@@ -65,5 +66,8 @@ bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC,
   ZTurnEnc = ZTurnEncRPC;
   MTurnEnc = MTurnEncRPC;
   CTurnEnc = CTurnEncRPC;
+  ZDevEnc = ZDevEncRPC;
+  MDevEnc = MDevEncRPC;
+  CDevEnc = CDevEncRPC;
   return true;
 }

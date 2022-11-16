@@ -1,6 +1,6 @@
 //use launchers so that the M7 is not held occupied
 
-int launchDecap(int Cpos){
+int launchDecap(long Cpos){
   *Pstate = 1;
   *PCpos = Cpos;
   return true;
@@ -64,16 +64,16 @@ bool launchCsetVMAX(long value){
 
 bool launchZsetCurrentScaling(int value){
   *Pstate = 51;
-  *pZvalue = value;
+  *piZvalue = value;
   return true;
 }
 bool launchMsetCurrentScaling(int value){
   *Pstate = 52;
-  *pMvalue = value;
+  *piMvalue = value;
   return true;
 }
 bool launchCsetCurrentScaling(int value){
   *Pstate = 53;
-  *pCvalue = value;
+  *piCvalue = value;
   return true;
 }

@@ -70,13 +70,13 @@ void homePage(EthernetClient* client_pntr){
   client_pntr->print("<p style=\"text-align:right\">");
   client_pntr->print("<strong> Z position : ");client_pntr->print(ZPos);client_pntr->print("</strong> Target : ");client_pntr->print(ZTarget);
   client_pntr->print((Zstate ?String("<span style=\"background-color:#00ff00;\">"):String("<span style=\"background-color:#ff0000;\">")) + "Encoder : </span>");client_pntr->print(ZPosEnc);client_pntr->print(" Angle : ");client_pntr->print(ZAngleEnc);
-  client_pntr->print(" Turn : ");client_pntr->print(ZTurnEnc);
+  client_pntr->print(" Turn : ");client_pntr->print(ZTurnEnc);client_pntr->print(" Deviation : ");client_pntr->print(ZDevEnc);
   client_pntr->print("<br /><strong> M position : ");client_pntr->print(MPos);client_pntr->print("</strong> Target : ");client_pntr->print(MTarget);
   client_pntr->print((Mstate ?String("<span style=\"background-color:#00ff00;\">"):String("<span style=\"background-color:#ff0000;\">")) + "Encoder : </span>");client_pntr->print(MPosEnc);client_pntr->print(" Angle : ");client_pntr->print(MAngleEnc);
-  client_pntr->print(" Turn : ");client_pntr->print(MTurnEnc);
+  client_pntr->print(" Turn : ");client_pntr->print(MTurnEnc);client_pntr->print(" Deviation : ");client_pntr->print(MDevEnc);
   client_pntr->print("<br /><strong> C position : ");client_pntr->print(CPos);client_pntr->print("</strong> Target : ");client_pntr->print(CTarget);
   client_pntr->print((Cstate ?String("<span style=\"background-color:#00ff00;\">"):String("<span style=\"background-color:#ff0000;\">")) + "Encoder : </span>");client_pntr->print(CPosEnc);client_pntr->print(" Angle : ");client_pntr->print(CAngleEnc);
-  client_pntr->print(" Turn : ");client_pntr->print(CTurnEnc);
+  client_pntr->print(" Turn : ");client_pntr->print(CTurnEnc);client_pntr->print(" Deviation : ");client_pntr->print(CDevEnc);
   client_pntr->println("</p>");
   client_pntr->print("<p>Time since last reset : " + String(c));client_pntr->println("</p>");
   client_pntr->println("<p><a href=\"http://" + StringIP + "/initialize\">Initialize</a></p>");

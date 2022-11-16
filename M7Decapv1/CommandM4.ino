@@ -11,7 +11,8 @@ void Decap(){
   task_start_time = millis();
   Serial.println("The machine will now start the decaping routine. Keep clear");
   
-  long C_pos = finalPos();
+  //long C_pos = finalPos();
+  long C_pos = 5000;
   Serial.print("Camera capture returned the value : ");
   Serial.println(C_pos);
   
@@ -19,7 +20,7 @@ void Decap(){
   DRIVER_ON;
   RELAY_ON;
   *M4work_pntr = true;
-  RPC.call("Decap",(int)C_pos).as<int>();
+  RPC.call("Decap",C_pos).as<int>();
 }
 
 
@@ -77,7 +78,7 @@ bool setVMAX(String currentLine){
   for(int i=1; i<valSize; i++){
     value = value*10 + currentLine[i]-48; // 48 is ASCII for 0
   }
-  if(value > 1000000){
+  if(value > 170000){ //Max = 200RPM = 3.33 RPS -> 200*256*200/60
     Serial.println("Value out of range");
     value = 0;
     return false;

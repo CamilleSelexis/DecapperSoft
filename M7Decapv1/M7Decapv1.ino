@@ -73,17 +73,19 @@ long ZTarget = 0;
 long ZPosEnc = 0;
 float ZAngleEnc = 0;
 float ZTurnEnc = 0;
+long ZDevEnc = 0;
 long MPos = 0;
 long MTarget = 0;
 long MPosEnc = 0;
 float MAngleEnc = 0;
 float MTurnEnc = 0;
+long MDevEnc = 0;
 long CPos = 0;
 long CTarget = 0;
 long CPosEnc = 0;
 float CAngleEnc = 0;
 float CTurnEnc = 0;
-
+long CDevEnc = 0;
 bool Zstate = false;
 bool Mstate = false;
 bool Cstate = false;
@@ -180,6 +182,12 @@ void setup() {
   
   LEDG_OFF;
   Serial.println("Setup done");
+    uint8_t SINGLETURN_RES = 0x0B; // 12-1 = 11
+  uint8_t MULTITURN_RES = 0x03; //4-1 = 3
+  uint8_t STATUS_BIT_CNT = 0x00; //Status bits set as multiturn bits, but unused nonetheless
+  uint8_t SERIAL_ADDR_BITS = 0x08; //8 bits for the address
+  uint32_t ENC_IN_DATA = SINGLETURN_RES | MULTITURN_RES<<5 | STATUS_BIT_CNT <<10 |SERIAL_ADDR_BITS <<16;
+  Serial.print("ENC_IN_DATA : ");Serial.println(ENC_IN_DATA,HEX);
 }
 
 void loop() {
