@@ -55,21 +55,21 @@ void updateValues(){
   ZPosEnc = ControllerZ.getEncoderPos();
   ZAngleEnc = ControllerZ.getEncoderAngle();
   ZDevEnc = ControllerZ.getEncoderDev();
-  ZTurnEnc = ControllerZ.getEncoderTurn();
+  //ZTurnEnc = ControllerZ.getEncoderTurn();
   delay(20);
   MPos = ControllerM.getCurrentPos();
   MTarget = ControllerM.getCurrentTarget();
   MPosEnc = ControllerM.getEncoderPos();
   MAngleEnc = ControllerM.getEncoderAngle();
   MDevEnc = ControllerM.getEncoderDev();
-  MTurnEnc = ControllerM.getEncoderTurn();
+  //MTurnEnc = ControllerM.getEncoderTurn();
   delay(20);
   CPos = ControllerC.getCurrentPos();
   CTarget = ControllerC.getCurrentTarget();
   CPosEnc = ControllerC.getEncoderPos();
   CAngleEnc = ControllerC.getEncoderAngle();
   CDevEnc = ControllerC.getEncoderDev();
-  CTurnEnc = ControllerC.getEncoderTurn();
+  //CTurnEnc = ControllerC.getEncoderTurn();
   delay(20);
   //if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget).as<bool>())
   if(!RPC.call("currentMotorPositionRPC",ZPos,MPos,CPos,ZTarget,MTarget,CTarget,
