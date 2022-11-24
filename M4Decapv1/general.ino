@@ -2,7 +2,7 @@ void init_RPC(){
   RPC.begin();
   RPC.bind("Decap",launchDecap);
   RPC.bind("Recap",launchRecap);
-  RPC.bind("InitDrivers",launchInitDrivers);
+  RPC.bind("Initialize",launchInitialize);
   RPC.bind("ZrelMove",launchZrelMove);
   RPC.bind("MrelMove",launchMrelMove);
   RPC.bind("CrelMove",launchCrelMove);
@@ -12,6 +12,7 @@ void init_RPC(){
   RPC.bind("ZsetCurrentScaling",launchZsetCurrentScaling);
   RPC.bind("MsetCurrentScaling",launchMsetCurrentScaling);
   RPC.bind("CsetCurrentScaling",launchCsetCurrentScaling);
+  RPC.bind("initControllers",launchinitControllers);
   /*RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("MCurrentPos",MCurrentPos);
   RPC.bind("CCurrentPos",CCurrentPos);
@@ -36,17 +37,17 @@ void getCurrentPosition(){
 
   ControllerZ.setCurrentPos(actualZ);
 
-  turn = ControllerC.getEncoderTurn();
-  angle = ControllerC.getEncoderAngle();
-  long actualC = floor((turn*360+angle)*USTEPS/1.8);
-
-  ControllerC.setCurrentPos(actualC);
-
   turn = ControllerM.getEncoderTurn();
   angle = ControllerM.getEncoderAngle();
   long actualM = floor((turn*360+angle)*USTEPS/1.8);
 
   ControllerM.setCurrentPos(actualM);
+  
+  turn = ControllerC.getEncoderTurn();
+  angle = ControllerC.getEncoderAngle();
+  long actualC = floor((turn*360+angle)*USTEPS/1.8);
+
+  ControllerC.setCurrentPos(actualC);
 }
 
 void updateValues(){
@@ -77,4 +78,11 @@ void updateValues(){
                                         ZTurnEnc,MTurnEnc,CTurnEnc,
                                         ZDevEnc,MDevEnc,CDevEnc).as<bool>())
     RPC.println("Error sending motor position");
+}
+
+void initControllers(){
+  pin_init();
+  ControllerZ.begin();
+  ControllerM.begin();
+  ControllerC.begin();
 }

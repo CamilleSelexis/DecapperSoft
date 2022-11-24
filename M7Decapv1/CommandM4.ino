@@ -4,7 +4,7 @@ void refAllHome(){ //Initialisation routine
   Serial.println("The device will start its initialization");
   LEDR_ON;
   DRIVER_ON;      //Motor enable
-  *M4work_pntr = RPC.call("InitDrivers").as<bool>();
+  *M4work_pntr = RPC.call("Initialize").as<bool>();
 }
 
 void Decap(){
@@ -144,4 +144,8 @@ bool setCurrentScaling(String currentLine){
       return false;
   }
   return true;
+}
+
+void initControllers(){
+  RPC.call("initControllers").as<bool>();
 }

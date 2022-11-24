@@ -11,16 +11,22 @@ void pin_init() {
   pinMode(MISO_PIN, INPUT);
   pinMode(SCK_PIN, OUTPUT);
 
-  pinMode(RST2,INPUT);
-  //Interrupt on the TGT pins
-  /*
   pinMode(TGT1,INPUT);
   pinMode(TGT2,INPUT);
   pinMode(TGT3,INPUT);
+  /*
   attachInterrupt(digitalPinToInterrupt(TGT1),tgt1_reached,FALLING);
   attachInterrupt(digitalPinToInterrupt(TGT2),tgt2_reached,FALLING);
   attachInterrupt(digitalPinToInterrupt(TGT3),tgt3_reached,FALLING);
   */
+}
+
+void driverReset(){
+  pinMode(RST_PIN,OUTPUT);
+  digitalWrite(RST_PIN,HIGH);
+  delay(10);
+  digitalWrite(RST_PIN,LOW);
+  pinMode(RST_PIN,INPUT);
 }
 /*
 void tgt1_reached(){

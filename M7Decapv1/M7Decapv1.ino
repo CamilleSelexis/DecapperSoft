@@ -17,18 +17,26 @@
 
 #define DECAP_ID  1
 
-#define EN_PIN  D14 //NFREEZE pin. active low, when low interrupt all outputs
-
+#define EN_PIN  D14 //NFREEZE pin. active low, emergency stops, cleared upon reset of the board
+//Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
+/*Unconnected pin on the portenta board
+ * A0-A6
+ * D2-D3
+ * D7
+ * D11-D12 used by vision shield camera
+ * A5-A6 used by vision shield
+ * D1 used for a timer?
+ */
 #define TGT1      D4
 #define TGT2      D5
 #define TGT3      D6
-#define CS1       D11
-#define CS2       D12
+#define CS1       D2 //Used by the vision shield
+#define CS2       D3 //used by the vision shield
 #define CS3       D13
 #define MOSI_PIN  D8
 #define MISO_PIN  D10
 #define SCK_PIN   D9
-#define CLK16_PIN D1
+#define CLK16_PIN D1 //Might be used by the vision shield
 
 #define M4RPC_PIN D2 //Active High - M7 can read this pin to know if RPC comm is possible
 #define RELAY_PIN D0
@@ -118,7 +126,7 @@ const uint8_t n = 2;             //Size of the moving average avg done on 2n+1
 //Ethernet related variables ----------------------------------------------------
 byte mac[] = {0xDE, 0xA1, 0x00, 0x73, 0x24, 0x12};  //Mac adress
 
-int8_t ip_addr[4] = {192,168,1,101};
+uint8_t ip_addr[4] = {192,168,1,101};
 String StringIP = String(ip_addr[0]) + "." + String(ip_addr[1]) + "." + String(ip_addr[2]) + "." + String(ip_addr[3]);
 IPAddress ip(ip_addr[0],ip_addr[1],ip_addr[2],ip_addr[3]); //
 EthernetServer server = EthernetServer(80);  // (port 80 is default for HTTP) 52 is the number of the lab
@@ -158,10 +166,10 @@ void setup() {
     Serial.println("Cam failed to initialize");
   }
   cam.setStandby(true);                //Put it in standby mode
-  
+  */
   //Init the Ethernet communications
   LEDB_ON;
-  */
+  
   Serial.println("Ethernet Coms starting...");
   Ethernet.begin(mac,ip);  //Start the Ethernet coms
   // Check for Ethernet hardware present
@@ -263,6 +271,10 @@ void loop() {
           answerHttp(client_pntr,currentLine);
           if(!setCurrentScaling(currentLine))
             Serial.println("Error setting Current Scaling");
+        }
+        else if(currentLine.endsWith("initControllers")){
+          answerHttp(client_pntr,currentLine);
+          initControllers();
         }
         
       }//if(client.available())

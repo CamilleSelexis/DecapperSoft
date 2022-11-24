@@ -11,7 +11,7 @@ bool launchRecap() {
   return true;
 }
 
-bool launchInitDrivers() {
+bool launchInitialize() {
   *Pstate = 3;
   return true;
 }
@@ -75,5 +75,10 @@ bool launchMsetCurrentScaling(int value){
 bool launchCsetCurrentScaling(int value){
   *Pstate = 53;
   *piCvalue = value;
+  return true;
+}
+
+bool launchinitControllers(){
+  *Pstate = 101;
   return true;
 }

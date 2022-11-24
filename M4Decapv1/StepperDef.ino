@@ -31,9 +31,9 @@ void setScrewingSpeed() {
   
   RPC.print("Screwing speed set to : ");RPC.println(screwSpeedZ);
   RPC.print("Screwing speed set to : ");RPC.println(screwSpeedC);
-  ControllerZ.setVMAX(screwSpeedZ,0);
+  ControllerZ.setVMAX(screwSpeedZ<<8,0); //first 8 bits are for decimal
   delay(20);
-  ControllerC.setVMAX(screwSpeedC,0);
+  ControllerC.setVMAX(screwSpeedC<<8,0);
   delay(20);
   /*ControllerZ.setAMAX(AMAX_DEFAULT);
   ControllerC.setAMAX(AMAX_DEFAULT);*/
