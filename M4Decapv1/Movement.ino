@@ -75,7 +75,7 @@ bool UnscrewCap(){
     return false;
   }
   RPC.println("Unscrewing of the cap");
-  //setScrewingSpeed();
+  setScrewingSpeed();
   ControllerZ.setTarget(capDecapZ);
   ControllerC.setTarget(capDecapC);
   if(!motor_running()){

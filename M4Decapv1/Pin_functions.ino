@@ -20,14 +20,6 @@ void pin_init() {
   attachInterrupt(digitalPinToInterrupt(TGT3),tgt3_reached,FALLING);
   */
 }
-
-void driverReset(){
-  pinMode(RST_PIN,OUTPUT);
-  digitalWrite(RST_PIN,HIGH);
-  delay(10);
-  digitalWrite(RST_PIN,LOW);
-  pinMode(RST_PIN,INPUT);
-}
 /*
 void tgt1_reached(){
   state = 21;

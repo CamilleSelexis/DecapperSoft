@@ -11,8 +11,7 @@ void Decap(){
   task_start_time = millis();
   Serial.println("The machine will now start the decaping routine. Keep clear");
   
-  //long C_pos = finalPos();
-  long C_pos = 5000;
+  long C_pos = finalPos();
   Serial.print("Camera capture returned the value : ");
   Serial.println(C_pos);
   

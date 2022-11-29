@@ -17,7 +17,6 @@
 
 #define DECAP_ID  1
 
-#define EN_PIN  D14 //NFREEZE pin. active low, emergency stops, cleared upon reset of the board
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
  * A0-A6
@@ -36,10 +35,9 @@
 #define MOSI_PIN  D8
 #define MISO_PIN  D10
 #define SCK_PIN   D9
-#define CLK16_PIN D1 //Might be used by the vision shield
-
-#define M4RPC_PIN D2 //Active High - M7 can read this pin to know if RPC comm is possible
-#define RELAY_PIN D0
+#define CLK16_PIN D0 //Might be used by the vision shield
+#define EN_PIN  D14 //NFREEZE pin. active low, emergency stops, cleared upon reset of the board
+#define RELAY_PIN A0
 
 #define F_CPU       200000000
 uint32_t ExtClk;
@@ -138,13 +136,14 @@ void setup() {
   //pinMode(EN_PIN,OUTPUT);
   //digitalWrite(EN_PIN,HIGH);
   DRIVER_OFF
-  //set up Timer1 for clk generation
-  mbed::PwmOut* pwm = new mbed::PwmOut(digitalPinToPinName(CLK16_PIN));
+  //set up Timer8 for clk generation
+  mbed::PwmOut* pwm = new mbed::PwmOut(digitalPinToPinName(CLK16_PIN)); //D0 TIM8 CH3N
   digitalPinToPwm(CLK16_PIN) = pwm;
-  TIM1->PSC = 0;
-  TIM1->ARR = 10; //Freq = F_CPU/(ARR*(PSC+1)) -> 200/10 = 20 MHz
-  TIM1->CCR1 = 5; //Used to define the duty cycle D1 HIGH when CNT<CCR1 & D1 LOW when CNT>CCR1
+  TIM8->PSC = 0;
+  TIM8->ARR = 10; //Freq = F_CPU/(ARR*(PSC+1)) -> 200/10 = 20 MHz
+  TIM8->CCR3 = 5; //Used to define the duty cycle D1 HIGH when CNT<CCR1 & D1 LOW when CNT>CCR1
   ExtClk = F_CPU/10;
+  //Timer 1 CH1 D1 is used by the camera
   //init serial port
   Serial.begin(115200);
   //while(!Serial);
@@ -157,7 +156,7 @@ void setup() {
   RPC.bind("initDone",initDone);
   RPC.bind("ZCurrentPos",ZCurrentPos);
   RPC.bind("currentMotorPositionRPC",currentMotorPositionRPC);
-  /*
+  
   //Init the camera
   if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
     Serial.println("Cam initialised");//initialise the camera
@@ -166,7 +165,7 @@ void setup() {
     Serial.println("Cam failed to initialize");
   }
   cam.setStandby(true);                //Put it in standby mode
-  */
+  
   //Init the Ethernet communications
   LEDB_ON;
   
@@ -190,7 +189,7 @@ void setup() {
   
   LEDG_OFF;
   Serial.println("Setup done");
-    uint8_t SINGLETURN_RES = 0x0B; // 12-1 = 11
+  uint8_t SINGLETURN_RES = 0x0B; // 12-1 = 11
   uint8_t MULTITURN_RES = 0x03; //4-1 = 3
   uint8_t STATUS_BIT_CNT = 0x00; //Status bits set as multiturn bits, but unused nonetheless
   uint8_t SERIAL_ADDR_BITS = 0x08; //8 bits for the address
@@ -218,7 +217,7 @@ void loop() {
           currentLine += c;
           c = client.read();
         }
-
+        
         if(currentLine.endsWith("home")){
           homePage(client_pntr);
         }

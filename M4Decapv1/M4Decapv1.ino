@@ -13,8 +13,7 @@
 #include "RPC.h"
 
 #define EN_PIN  D14
-#define STALL_PIN D5
-#define RST_PIN A0 //not used yet
+//#define STALL_PIN D5
 #define TGT1      D4
 #define TGT2      D5
 #define TGT3      D6
@@ -24,7 +23,8 @@
 #define MOSI_PIN  D8
 #define MISO_PIN  D10
 #define SCK_PIN   D9
-#define CLK16_PIN D1
+#define CLK16_PIN D0
+#define RELAY_PIN A0
 
 #define TIMEOUT_MVMT 30000 //30 sec
 #define TIMEOUT 10000 //10 sec
@@ -110,7 +110,6 @@ TMC4361A *pControllerC = &ControllerC;
 void setup() {
   //Initialize pins
   pin_init();
-  //driverReset();
   digitalWrite(LEDR,LOW);
   //Initialize the RPC
   init_RPC();
@@ -157,9 +156,6 @@ void loop() {
       break;
       
     case 3: //Init_drivers
-      /*ControllerZ.begin();
-      ControllerM.begin();
-      ControllerC.begin();*/
       RPC.println("Axis Z");
       Zstate = init_driver(pControllerZ);
       RPC.println("Axis M");
