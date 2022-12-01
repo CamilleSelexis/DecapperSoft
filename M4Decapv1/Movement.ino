@@ -5,11 +5,31 @@ bool motor_running(){
   digitalWrite(LEDR,LOW);
   long time_start = millis();
   long time_update = time_start;
-  updateValues();
+  //updateValues();
   if(ZPos != ZTarget)    RPC.println("Z is running");
   if(MPos != MTarget)    RPC.println("M is running");
   if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
+    /*if(ControllerZ.isEncoderFail() || ControllerM.isEncoderFail() || ControllerC.isEncoderFail()){
+      RPC.println("Encoder fail");
+      RPC.println(ControllerM.readRegister(TMC4361A_ENC_POS_DEV_RD));
+      ControllerZ.clearEvent();
+      ControllerM.clearEvent();
+      ControllerC.clearEvent();
+      ControllerZ.powerOffMOSFET();
+      ControllerM.powerOffMOSFET();
+      ControllerC.powerOffMOSFET();
+      return false;
+    }
+    if(ControllerZ.isSerialEncoderVar() || ControllerM.isSerialEncoderVar() || ControllerC.isSerialEncoderVar()){
+      RPC.println("Serial value fail");
+      RPC.println(ControllerM.readRegister(TMC4361A_ENC_POS_DEV_RD));
+      ControllerZ.clearEvent();
+      ControllerM.clearEvent();
+      ControllerC.clearEvent();
+      //return false;
+    }*/
+      
     if(millis()-time_start > TIMEOUT_MVMT){
       RPC.println("Something is wrong and I can feel it");
       ControllerZ.setTargetRelative(0);
@@ -19,12 +39,8 @@ bool motor_running(){
       return false;
     }
     if(millis()-time_update > TIME_UPDATE){
-      /*if(!encoderCheck(ControllerM,MAngleEnc,MTurnEnc,MPos)){
-        ControllerM.setTargetRelative(0);
-        RPC.println("Encoder mismatch");
-        return false;
-      }*/
-      updateValues();
+
+      //updateValues();
       time_update = millis();
     }
   }
@@ -151,23 +167,23 @@ bool init_driver(TMC4361A *pController){ //Not robust if starting pos is close t
   float init_angle = pController->getEncoderAngle();
   float target_angle = 0;
   float tolerance = 5; //5°tolerance = 256*200/360*5 =~ 700 uSteps
-  pController->setCurrentPos(0);
+  //pController->setCurrentPos(0);
   delay(50);
   for(int i = 1; i<=3; i++){
-    //ControllerM.setVMAX(long(200*256*i/6),0);//About 1/6 turn per sec
     switch(i){
-      case 1 : pController->setTarget(50*256); //+90 °
+      case 1 : pController->setTargetRelative(50*256); //+90 °
        target_angle = init_angle + 90 - (init_angle>270?360:0);
       break;
-      case 2 : pController->setTarget(50*256*(-1)); // -90°
+      case 2 : pController->setTargetRelative(100*256*(-1)); // -90°
       target_angle = init_angle - 90 + (init_angle < 90?360:0);
       
       break;
-      case 3 : pController->setTarget(0); // 0°
+      case 3 : pController->setTargetRelative(50*256); // 0°
       target_angle = init_angle + 0;
       break;
     }
     while(!pController->isTargetReached()); //Wait for the motor to turn
+    //motor_running();
     float new_angle = pController->getEncoderAngle(); //Should be equal to 90/0
     RPC.print("angle_diff = ");RPC.println(abs(new_angle - target_angle));
     if(abs(new_angle - target_angle) > tolerance){
