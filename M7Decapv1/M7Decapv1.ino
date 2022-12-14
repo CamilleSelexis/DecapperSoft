@@ -26,17 +26,18 @@
  * A5-A6 used by vision shield
  * D1 used for a timer?
  */
-#define TGT1      D4
-#define TGT2      D5
-#define TGT3      D6
-#define CS1       D2 //Used by the vision shield
-#define CS2       D3 //used by the vision shield
-#define CS3       D13
+#define EN_PIN  D14
+//#define STALL_PIN D5
+#define TGT1      D2
+#define TGT2      D3
+#define TGT3      D4
+#define CS1       D5
+#define CS2       D6
+#define CS3       D7
 #define MOSI_PIN  D8
 #define MISO_PIN  D10
 #define SCK_PIN   D9
-#define CLK16_PIN D0 //Might be used by the vision shield
-#define EN_PIN  D14 //NFREEZE pin. active low, emergency stops, cleared upon reset of the board
+#define CLK16_PIN D0
 #define RELAY_PIN A0
 
 #define F_CPU       200000000
