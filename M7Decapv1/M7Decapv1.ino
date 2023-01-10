@@ -61,6 +61,9 @@ uint32_t ExtClk;
 #define USTEPS  256 //number of usteps by full steps
 #define STEP_TURN 200 //number of full steps in a single turn of the axis
 
+#define RELMOVE_LIMIT 10000000 //Max value rel move accepts
+#define CS_LIMIT 32 //max value setCurrentScaling accepts
+#define VMAX_LIMIT 1700000 //max value setVMAX accepts
 //State variables ------------------------------------------------------------------------
 bool HS = false; //If the decapper needs to be ignored
 

@@ -11,6 +11,8 @@ void pin_init() {
   pinMode(MISO_PIN, INPUT);
   pinMode(SCK_PIN, OUTPUT);
 
+  pinMode(EN_PIN,OUTPUT);
+  digitalWrite(EN_PIN,LOW);
   pinMode(TGT1,INPUT);
   pinMode(TGT2,INPUT);
   pinMode(TGT3,INPUT);

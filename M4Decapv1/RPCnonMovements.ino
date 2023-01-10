@@ -1,13 +1,13 @@
 bool ZsetVMAX(long value){
-  ControllerZ.setVMAX(value,0); //set VMAX in standard format Usteps/s
+  ControllerZ.setVMAX(value<<8,0); //set VMAX in standard format Usteps/s
   return true;
 }
 bool MsetVMAX(long value){
-  ControllerM.setVMAX(value,0);
+  ControllerM.setVMAX(value<<8,0);
   return true;
 }
 bool CsetVMAX(long value){
-  ControllerC.setVMAX(value,0);
+  ControllerC.setVMAX(value<<8,0);
   return true;
 }
 bool ZsetCurrentScaling(int value){

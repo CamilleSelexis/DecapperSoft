@@ -10,25 +10,6 @@ bool motor_running(){
   if(MPos != MTarget)    RPC.println("M is running");
   if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
-    /*if(ControllerZ.isEncoderFail() || ControllerM.isEncoderFail() || ControllerC.isEncoderFail()){
-      RPC.println("Encoder fail");
-      RPC.println(ControllerM.readRegister(TMC4361A_ENC_POS_DEV_RD));
-      ControllerZ.clearEvent();
-      ControllerM.clearEvent();
-      ControllerC.clearEvent();
-      ControllerZ.powerOffMOSFET();
-      ControllerM.powerOffMOSFET();
-      ControllerC.powerOffMOSFET();
-      return false;
-    }
-    if(ControllerZ.isSerialEncoderVar() || ControllerM.isSerialEncoderVar() || ControllerC.isSerialEncoderVar()){
-      RPC.println("Serial value fail");
-      RPC.println(ControllerM.readRegister(TMC4361A_ENC_POS_DEV_RD));
-      ControllerZ.clearEvent();
-      ControllerM.clearEvent();
-      ControllerC.clearEvent();
-      //return false;
-    }*/
       
     if(millis()-time_start > TIMEOUT_MVMT){
       RPC.println("Something is wrong and I can feel it");
@@ -40,7 +21,7 @@ bool motor_running(){
     }
     if(millis()-time_update > TIME_UPDATE){
 
-      //updateValues();
+      updateValues();
       time_update = millis();
     }
   }
