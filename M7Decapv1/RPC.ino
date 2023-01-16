@@ -9,7 +9,6 @@ bool initDone(bool ZEnc, bool MEnc, bool CEnc){
   *M4work_pntr = false;
   *isInit_pntr = true;
   *capHeld_pntr = false;
-  DRIVER_OFF;
   LEDR_OFF;
   RELAY_OFF;
   Zstate = ZEnc;
@@ -22,7 +21,6 @@ bool initDone(bool ZEnc, bool MEnc, bool CEnc){
 bool decapDone(){
   *M4work_pntr = false;
   *capHeld_pntr = true;
-  DRIVER_OFF;
   LEDR_OFF;
   RELAY_OFF;
   Serial.print("decapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
@@ -32,22 +30,21 @@ bool decapDone(){
 bool recapDone(){
   *M4work_pntr = false;
   *capHeld_pntr = false;
-  DRIVER_OFF;
   LEDR_OFF;
   RELAY_OFF;
   Serial.print("recapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   return true;
 }
-
+//---------------------------------------------------Can be removed
 bool ZCurrentPos(long motorPos){
   ZPos = motorPos;
   return true;
 }
-
+//--------------------------------------------------------------------------
 //bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC, long ZTargetRPC, long MTargetRPC, long CTargetRPC){
 bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC,
                             long ZTargetRPC, long MTargetRPC, long CTargetRPC,
-                              long ZPosEncRPC, long MPosEncRPC, long CPosEncRPC,
+                              uint32_t ZPosEncRPC, uint32_t MPosEncRPC, uint32_t CPosEncRPC,
                               float ZAngleEncRPC, float MAngleEncRPC, float CAngleEncRPC,
                               float ZTurnEncRPC, float MTurnEncRPC, float CTurnEncRPC,
                               long ZDevEncRPC, long MDevEncRPC, long CDevEncRPC){
@@ -63,9 +60,12 @@ bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC,
   ZAngleEnc = ZAngleEncRPC;
   MAngleEnc = MAngleEncRPC;
   CAngleEnc = CAngleEncRPC;
-  ZTurnEnc = ZTurnEncRPC;
+  ZTurnEnc = ZPosEnc - ZposBefore;
+  MTurnEnc = MPosEnc - MposBefore;
+  CTurnEnc = CPosEnc - CposBefore;
+  /*ZTurnEnc = ZTurnEncRPC;
   MTurnEnc = MTurnEncRPC;
-  CTurnEnc = CTurnEncRPC;
+  CTurnEnc = CTurnEncRPC;*/
   ZDevEnc = ZDevEncRPC;
   MDevEnc = MDevEncRPC;
   CDevEnc = CDevEncRPC;

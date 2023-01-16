@@ -30,7 +30,6 @@ bool motor_running(){
   CLEAR_RUNNING;
   return true;
 }
-
 //Open the claws and lower the arm
 bool ApproachFlask(){
   RPC.println("Going closer to the flask");
@@ -74,7 +73,7 @@ bool UnscrewCap(){
   RPC.println("Unscrewing of the cap");
   setScrewingSpeed();
   ControllerZ.setTarget(capDecapZ);
-  ControllerC.setTarget(capDecapC);
+  ControllerC.setTargetRelative(capDecapC);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
@@ -97,10 +96,18 @@ bool goToStandby() {
 
   return true;
 }
+bool goToStandbyWithCap() {
+  ControllerZ.setTarget(standbyZ);
+    if(!motor_running()){
+    RPC.println("Failed goToStandby");
+    return false;
+  }
 
+  return true;
+}
 //Perform screwing movement, lower the arm, turn CW while going down, open the claws
 bool ScrewCap(){
-  RPC.println("Press the cap");
+  RPC.println("Going to screw height");
   ControllerZ.setTarget(screwStartZ);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
@@ -108,42 +115,71 @@ bool ScrewCap(){
   }
   RPC.println("Screwing of the cap");
   setScrewingSpeed();
-  ControllerZ.setTarget(capDecapZ);
-  ControllerC.setTarget(capDecapC);
+  ControllerZ.setTarget(capHeight);
+  ControllerC.setTargetRelative(capRecapC);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
+  setDefaultSpeed();
   RPC.println("Release the cap");
   ControllerM.setTarget(capRelease);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  setDefaultSpeed();
   return true;
 }
 bool decap(){
   //pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
+  setDefaultSpeed();
   if(!ApproachFlask()) return false;
   if(!AlignCap(*PCpos)) return false;
   if(!UnscrewCap()) return false;
-  if(!goToStandby()) return false;
+  if(!goToStandbyWithCap()) return false;
   
   return true;
 }
 
 bool recap(){
-  if(!ApproachFlask()) return false;
-  if(!AlignCap(*PCpos)) return false;
+  setDefaultSpeed();
   if(!ScrewCap()) return false;
   if(!goToStandby()) return false;
   
   return true;
 }
-
+bool init_driver(TMC4361A *pController) {
+  long initPos = pController->getEncoderPos();
+  long targetPos = 0;
+  long tolerance = 256; //1FS tolerance
+  //Set the speed to the calibration speed
+  delay(50);
+  for(int i = 1; i<=3; i++){
+    switch(i){
+      case 1 : pController->setTargetRelative(50*256); //+90 °
+       targetPos = initPos + 50*256;
+       break;
+      case 2 : pController->setTargetRelative(100*256*(-1)); // -90°
+        targetPos = initPos - 50*256;
+        break;
+      case 3 : pController->setTargetRelative(50*256); // 0°
+        targetPos = initPos;
+      break;
+    }
+    while(!pController->isTargetReached()); //Wait for the motor to turn
+    //motor_running();
+    long newPos = pController->getEncoderPos(); //Should be equal to 50*256
+    RPC.print("Position difference = ");RPC.println(abs(newPos - targetPos));
+    if(abs(newPos-targetPos) > tolerance){
+      RPC.print("Encoder outisde of tolerance : " + String(newPos-targetPos));
+      return false;
+    }
+  }
+  RPC.println("Encoder is in tolerance");
+  return true;
+}
 //Check that the drivers are operating correctly and that the encoder return correct values
-bool init_driver(TMC4361A *pController){ //Not robust if starting pos is close to 90 or 270 °
+bool init_driverOld(TMC4361A *pController){ //Not robust if starting pos is close to 90 or 270 °
   //Sequentially check the drivers
   float init_angle = pController->getEncoderAngle();
   float target_angle = 0;

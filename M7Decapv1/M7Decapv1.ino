@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  1
+#define DECAP_ID  4
 
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
@@ -28,12 +28,12 @@
  */
 #define EN_PIN  D14
 //#define STALL_PIN D5
-#define TGT1      D2
-#define TGT2      D3
-#define TGT3      D4
-#define CS1       D5
-#define CS2       D6
-#define CS3       D7
+#define TGT_Z      D4
+#define TGT_M      D3
+#define TGT_C      D2
+#define CS_Z       D7
+#define CS_M       D6
+#define CS_C       D5
 #define MOSI_PIN  D8
 #define MISO_PIN  D10
 #define SCK_PIN   D9
@@ -42,11 +42,6 @@
 
 #define F_CPU       200000000
 uint32_t ExtClk;
-
-#define DRIVER_ON delay(20);
-#define DRIVER_OFF delay(20);
-/*#define DRIVER_ON digitalWrite(EN_PIN,LOW);
-#define DRIVER_OFF digitalWrite(EN_PIN,HIGH);*/
 
 #define RELAY_ON digitalWrite(RELAY_PIN,HIGH);
 #define RELAY_OFF digitalWrite(RELAY_PIN,LOW);
@@ -78,21 +73,25 @@ volatile bool *M4work_pntr = &M4work;     //N'est pas utilisé pour le moment ma
 
 long task_start_time = 0; //variable to store the time needed to perform a given task
 //Values received from the M4 core
+long ZposBefore = 0;
+long MposBefore = 0;
+long CposBefore = 0;
+long posAfter = 0;
 long ZPos = 0;
 long ZTarget = 0;
-long ZPosEnc = 0;
+uint32_t ZPosEnc = 0;
 float ZAngleEnc = 0;
 float ZTurnEnc = 0;
 long ZDevEnc = 0;
 long MPos = 0;
 long MTarget = 0;
-long MPosEnc = 0;
+uint32_t MPosEnc = 0;
 float MAngleEnc = 0;
 float MTurnEnc = 0;
 long MDevEnc = 0;
 long CPos = 0;
 long CTarget = 0;
-long CPosEnc = 0;
+uint32_t CPosEnc = 0;
 float CAngleEnc = 0;
 float CTurnEnc = 0;
 long CDevEnc = 0;
@@ -139,7 +138,6 @@ void setup() {
   LEDG_ON;
   //pinMode(EN_PIN,OUTPUT);
   //digitalWrite(EN_PIN,HIGH);
-  DRIVER_OFF
   //set up Timer8 for clk generation
   mbed::PwmOut* pwm = new mbed::PwmOut(digitalPinToPinName(CLK16_PIN)); //D0 TIM8 CH3N
   digitalPinToPwm(CLK16_PIN) = pwm;
@@ -152,7 +150,6 @@ void setup() {
   Serial.begin(115200);
   //while(!Serial);
   Serial.println("Setup start");
-  //DRIVER_ON; //Should check if this is necessary for the setup
   RPC.begin();
   RPC.bind("M4TaskCompleted",M4TaskCompleted);
   RPC.bind("decapDone",decapDone);
@@ -198,7 +195,6 @@ void setup() {
 void loop() {
   LEDB_ON;
   delay(250);
-  
   EthernetClient client = server.available();
   EthernetClient* client_pntr = &client;
   if(client){ //A client tries to connect 
