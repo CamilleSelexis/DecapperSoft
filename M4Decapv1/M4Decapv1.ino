@@ -76,7 +76,7 @@
 uint32_t ExtClk;
 
 long Cpos = 0;
-long *PCpos = &Cpos;
+long *pCPos = &Cpos;
 int state = 0; //State used by the finite state machine
 int* Pstate = &state;
 
@@ -179,7 +179,7 @@ void loop() {
       break;
       
     case 1: //Decap
-      RPC.print("Launching Decap with Cpos : ");RPC.println(*PCpos);
+      RPC.print("Launching Decap with Cpos : ");RPC.println(*pCPos);
       DRIVER_ON;
       decap();
       DRIVER_OFF;
@@ -331,6 +331,7 @@ void loop() {
       state = 0; //return to default state
       iCvalue = 0;
       break;
+   
     case 101:
       initControllers();
       break;

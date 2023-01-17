@@ -20,7 +20,6 @@ void Decap(){
   RPC.call("Decap",C_pos).as<int>();
 }
 
-
 void Recap(){
   task_start_time = millis();
   Serial.println("The machine will now start the recaping routine. Keep clear");

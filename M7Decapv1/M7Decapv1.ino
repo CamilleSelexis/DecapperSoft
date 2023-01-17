@@ -99,8 +99,8 @@ bool Zstate = false;
 bool Mstate = false;
 bool Cstate = false;
 //Camera related variables --------------------------------------------------------------
-const int imgH = 240; //X dimension
-const int imgW = 320; //Y dimension
+const int imgH = 240; //Y dimension
+const int imgW = 320; //X dimension
 HM01B0 himax;
 Camera cam(himax);
 #define IMAGE_MODE CAMERA_GRAYSCALE
@@ -110,15 +110,15 @@ FrameBuffer FB(imgH,imgW,1);
 uint8_t fb[imgW*imgH];        //Buffer for the image capture
 uint8_t *Pfb = fb; 
 
-const int cropx[2] = {120,140};    //Size of the cropped image
-const int cropy[2] = {100,200};
+const int cropx[2] = {230,250};    //Size of the cropped image in the width
+const int cropy[2] = {100,200};   //Size of the cropped image in the height
 const int ly = cropy[1]-cropy[0]; //Length of the cropped dimmensions
 const int lx = cropx[1]-cropx[0];
 
 const long calibration = 1000*USTEPS;    //Rotation offset - 9267 is the distance between the bumps
-const int cal_prop = 28; //Factor for the calibration based on the dist from the center
+const int caliProp = 28; //Factor for the calibration based on the dist from the center
 
-long stp1tour = ceil(STEP_TURN*51*1.25*USTEPS);
+long uSToTurnC = ceil(STEP_TURN*51.89*1.25*USTEPS);
 //Light depending parameters for the image detection (will probably need a tweek for each environement)
 //Try to change thres and n to have the minimum amount of markers detected while never having 0 of them.
 const uint8_t thres = 8;         //Threshold of image detection 2->10
@@ -269,7 +269,16 @@ void loop() {
           answerHttp(client_pntr,currentLine);
           initControllers();
         }
-        
+        else if(currentLine.endsWith("capture")){
+          answerHttpCapture(client_pntr,currentLine);
+          Serial.println("------------------------");
+          finalPos();
+          //detectEdges();
+          //printCapture(); //print on Serial Monitor
+          Serial.println("------------------------");
+          //printCrop();
+          Serial.println("-------------------------");
+        }
       }//if(client.available())
       else if(millis()-time_start > TIMEOUT_ETH){
         Serial.println("Client timed out");

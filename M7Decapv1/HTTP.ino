@@ -124,3 +124,22 @@ void statusHttp(EthernetClient* client_pntr,String currentLine){
   while (client_pntr->read() != -1);
   client_pntr->stop();
 }
+
+void answerHttpCapture(EthernetClient* client_pntr,String currentLine){
+  client_pntr->println("HTTP/1.1 200 OK");
+  client_pntr->println("Content-Type: text/html");
+  client_pntr->println("Connection: close");  // the connection will be closed after completion of the response
+  //client_pntr->println("Refresh: 5");  // refresh the page automatically every 5 sec
+  client_pntr->println();
+  client_pntr->print("Received command : " + currentLine + " at internal time :");client_pntr->println(millis());
+  client_pntr->println("<p><a href=\"http://" + StringIP + "/home\">Home</a></p>");
+  client_pntr->println();
+  client_pntr->print("Connection closed by the server at internal time : ");client_pntr->println(millis());
+
+  
+  //Close the connection
+  delay(10);
+  //client_pntr->flush();
+  while (client_pntr->read() != -1);
+  client_pntr->stop();
+}

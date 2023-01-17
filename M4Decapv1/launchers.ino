@@ -2,7 +2,7 @@
 
 int launchDecap(long Cpos){
   *Pstate = 1;
-  *PCpos = Cpos;
+  *pCPos = Cpos;
   return true;
 }
 
@@ -77,7 +77,6 @@ bool launchCsetCurrentScaling(int value){
   *piCvalue = value;
   return true;
 }
-
 bool launchinitControllers(){
   *Pstate = 101;
   return true;

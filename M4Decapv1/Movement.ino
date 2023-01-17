@@ -48,7 +48,7 @@ bool ApproachFlask(){
 bool AlignCap(long capPos){
   delay(100);
   RPC.print("Aligning the claws with the cap ");RPC.println(capPos);
-  ControllerC.setTargetRelative(capPos);
+  ControllerC.setTarget(capPos);
   if(!motor_running()){
     RPC.println("Failed AlignCap");
     return false;
@@ -134,7 +134,7 @@ bool decap(){
   //pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
   setDefaultSpeed();
   if(!ApproachFlask()) return false;
-  if(!AlignCap(*PCpos)) return false;
+  if(!AlignCap(*pCPos)) return false;
   if(!UnscrewCap()) return false;
   if(!goToStandbyWithCap()) return false;
   

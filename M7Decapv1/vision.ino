@@ -26,14 +26,21 @@ long finalPos() {
   //cam.standby(true);
   double dist1 = 0;
   double dist2 = 0;
-  double pixtomm = 0.16606; //Should be right
+  double pixtomm = 0.2111; //Computed with px size of 3 bump = 19mm = 90 px
   double pi = 3.14159265358979323846;  //is definitely right
-  //24 is the size of the cap
-  dist1 = (temp1-imgH/2) * pixtomm; //Compute the dist with the center
+  double distToCap = 38; //Distance between the camera and the cap
+  double radiusCap = 22.5;
+  double capCenter = 152; //Position of the center of the cap on the camera (in px)
+  //Distance between the center and the edge in mm
+  dist1 = (capCenter-temp1) * pixtomm; //Compute the dist with the center
   // The positive direction for C is clockwise
-  dist1 = -ceil(stp1tour*(atan2(dist1,24)/(2*pi)))+calibration - dist1*dist1*cal_prop;
-  dist2 = (temp2-imgH/2) * pixtomm;
-  dist2 = -ceil(stp1tour*(atan2(dist2,24)/(2*pi)))+calibration - dist2*dist2*cal_prop;
+  //calibration is the base position
+  //24° is the angle between 2 bumps -> 15 bumps on each cap -> 360/15 = 24
+  //We want to move between 2 bumps
+  dist1 = ceil(uSToTurnC*(atan2(dist1,radiusCap)/(2*pi))+uSToTurnC/30);
+  //+calibration -dist1*dist1*caliProp;
+  dist2 = (capCenter-temp2) * pixtomm;
+  dist2 = ceil(uSToTurnC*(atan2(dist2,radiusCap)/(2*pi))+uSToTurnC/30);
   Serial.print("Motor should move ");Serial.print(ceil((dist1+dist2)/2));
   Serial.println(" steps to align its claws");
   return (long)ceil((dist1+dist2)*0.5);
@@ -47,7 +54,8 @@ long detectEdges() {
   float gaussian2D[3][3] = {{1,2,1},{2,4,2},{1,2,1}};
   float lineAvg[ly];
   float line[ly];
-  float edge_pos[100]; //Max size if every single pixel is a max (impossible)
+  int edgePos[100]; //Max size if every single pixel is a max (impossible)
+  float edge[100];
   if (cam.grabFrame(FB) == 0){
     Serial.println("Capture done");
     Pfb = FB.getBuffer();
@@ -59,23 +67,36 @@ long detectEdges() {
       cropped2D[i][j] = *(Pfb+ (j+cropy[0])*imgW+(i+cropx[0]));
       //cropped2D[i][j] = fb[(j+cropy[0])*imgW+(i+cropx[0])];
       result2D[i][j] = 0;
+      //Serial.print(cropped2D[i][j]);Serial.print(" , ");
     }
+    //Serial.println("");
   }
+  Serial.println("---------------------------");
   //Compute gaussian avg on the picture with a convolution
+  Serial.println("Gaussian");
   convolution_2D(cropped2D,gaussian2D,result2D);
   for(int i = 0; i<lx; i++){
     for(int j = 0; j<ly; j++){
         cropped2D[i][j] = result2D[i][j]/16;
         result2D[i][j] = 0;
+        //Serial.print(cropped2D[i][j]);Serial.print(" , ");
     }
+    //Serial.println("");
   }
+  Serial.println("-------------------------");
+  Serial.println("Sobel");
   //Use sobel filter on the averaged picture to detect the edges
   convolution_2D(cropped2D,filter2D,result2D);
   for(int i = 0; i<lx; i++){
     for(int j = 0; j<ly; j++){
         result2D[i][j] = abs(result2D[i][j]);
+        if(j<3 || j>ly-3) result2D[i][j] = 0; //remove border
+        //Serial.print(result2D[i][j]);Serial.print(" , ");
     }
+    //Serial.println("");
   }
+  Serial.println("--------------------------------");
+  Serial.println("Line average");
   //Compute avg on each lines
   for(int i=0;i<ly;i++){
     line[i] = 0;
@@ -84,74 +105,56 @@ long detectEdges() {
       line[i] = line[i] + result2D[j][i]; //Compute sum on each line
     }
     line[i] = line[i]/lx; // Avg each line
+    //Serial.print(line[i]);Serial.print(" , ");
   }
+  Serial.println("");
+  Serial.println("-------------------");
+  Serial.println("moving average 2 & intensity thresholding");
   movingAverage(line,lineAvg,2,ly);
   //Intensity Thresholding
   int int_thresh = 35; //Could add a smart way to compute the threshold by doing histograms
   for(int i = 0; i<ly; i++){
       if(lineAvg[i]> int_thresh)
-          lineAvg[i] = 255;
+          lineAvg[i] = lineAvg[i]*2;
       else
           lineAvg[i] = 0;
       line[i] = lineAvg[i];
+      //Serial.print(line[i]);Serial.print(" , ");
   }
-  movingAverage(line,lineAvg,1,ly);
+  Serial.println("");
+  Serial.println("-----------------");
+  Serial.println("Moving average 3");
+  movingAverage(line,lineAvg,3,ly);
+  for (int i = 1;i<ly;i++) {
+    Serial.print(lineAvg[i]);Serial.print(" , ");
+  }
+    Serial.println("");
+  Serial.println("-----------------");
+  //Edge finding -> doesn't consider the 5 pixels on the edge && verify that it is a local max
   int k = 0;
-  int found = 0;
-  for(int i = 10; i<ly-10;i++){ // don't consider the 10 pixel on the borders
+  for(int i = 5; i<ly-5;i++){ // don't consider the 5 pixel on the borders
     if(lineAvg[i]>int_thresh && lineAvg[i]>=lineAvg[i-1] && lineAvg[i] >= lineAvg[i+1]){
-      edge_pos[k++] = i;
-      found++;
-      //Serial.print("Found max at : "); Serial.println(i);
+      edgePos[k] = i;
+      edge[k] = lineAvg[i];
+      k++;
     }
   }
   //It selects the edge closest to the front of the camera
-  Serial.print("Found : ");Serial.print(found);Serial.println(" edges");
-  int edge_number[found];
-  int edge_length[found];
-  int nb_edge = 0;
-  int l = 0;
-  if(found == 0){
-    edge_length[0] = 0;
-    edge_number[0] = 0;
-  }
-  for(int i = 0; i<found; i++){
-    if(i<found-1){
-      edge_number[i] = nb_edge;
-      edge_length[nb_edge] = ++l;
-      if(edge_pos[i+1]-edge_pos[i]>5){
-        nb_edge = nb_edge+1;
-        l = 0;
-      }
+  Serial.print("Found : ");Serial.print(k);Serial.println(" edges");
+  int max_index = 0;
+  float max_val = 0;
+  for(int i = 0;i<k;i++){
+    if(edge[i]>max_val){
+      max_index = i;
+      max_val = edge[i];
     }
-    else{
-//      if(edge_pos[i]-edge_pos[i-1]>5){
-//        nb_edge = nb_edge+1;
-//        l = 0;
-//      }
-      edge_number[i] = nb_edge;
-      edge_length[nb_edge] = ++l;
-    }
-    Serial.print(edge_pos[i]);Serial.print(" ");Serial.print(edge_number[i]);Serial.println(" ");
+    Serial.print("Edge : ");Serial.print(i);Serial.print(" is at position : ");
+    Serial.print(edgePos[i]);Serial.print(" with value : ");
+    Serial.println(edge[i]);
   }
-  Serial.print("There is ");Serial.print(nb_edge+1);Serial.println(" different edges detected");
-  for(int i = 0;i<nb_edge+1;i++){
-    Serial.print("The edge ");Serial.print(i);Serial.print(" is ");Serial.print(edge_length[i]);Serial.println(" pixel long");
-  }
-  float edge_midpos[nb_edge+1];
-  for(int i = 0; i<found; i++){
-     edge_midpos[edge_number[i]] += edge_pos[i];
-  }
-  for(int i = 0;i<nb_edge+1;i++){
-    edge_midpos[i] = ceil(edge_midpos[i]/edge_length[i]);
-    Serial.print("The middle position of the edge ");Serial.print(i);Serial.print(" is at pos ");Serial.println(edge_midpos[i]);
-  }
-  long edge_position = 0;
-  for(int i= 0; i<nb_edge+1; i++){
-    if(abs(edge_midpos[i]-ly/2) < abs(edge_position-ly/2)) edge_position = (long)edge_midpos[i];
-  }
-  Serial.print("Edge at position ");Serial.print(edge_position+ cropy[0]);Serial.println(" in the full picture");
-  return edge_position + cropy[0];
+  Serial.print("Maximum edge is at position : ");Serial.print(edgePos[max_index]);
+  Serial.print(" with value : ");Serial.println(edge[max_index]);
+  return edgePos[max_index] + cropy[0];
   
 }
 
@@ -193,12 +196,27 @@ void convolution_2D(float N[lx][ly], float M[3][3], float P[lx][ly]) {
 }
 //Takes a capture and prints it
 void printCapture(){
+  /*
   if (cam.grabFrame(FB) == 0){
     Serial.println("Capture done");
     Pfb = FB.getBuffer();
     for(int i = 0; i<imgW;i++){
       for(int j = 0; j<imgH;j++){
-        Serial.print(*(Pfb+(i*imgH + j))); Serial.print(", ");
+        Serial.print(*(Pfb+(i*imgH + j))); Serial.print(", "); //The image is kept by column -> 240,240,240
+      }
+      Serial.println();
+    }
+  }
+  else{Serial.println("Couldn't take a capture");}*/
+}
+
+void printCrop(){
+    if (cam.grabFrame(FB) == 0){
+    Serial.println("Capture done");
+    Pfb = FB.getBuffer();
+    for(int i = 0; i<lx;i++){  //20 column
+      for(int j = 0; j<ly;j++){ //100 lines
+        Serial.print(*(Pfb+ (j+cropy[0])*imgW+(i+cropx[0]))); Serial.print(", ");
       }
       Serial.println();
     }
