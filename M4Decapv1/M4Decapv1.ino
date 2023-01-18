@@ -1,9 +1,10 @@
 /*
- * M4Decapv1 by Camille Aussems
- * Selexis Geneva 26.08.2022
- * To run on an arduino portenta H7 with vision shield
- * Drive up to 3 driver/controller TMC4361A - TMC2660
- * Upload on M4 core
+ * Arduino Portenta script written for the M4 core
+ * Programmed by Camille Aussems - Selexis Geneva 17.01.2023
+ * V1.0
+ * 
+ * The M4 core is the one in charge of the parametrisation of the Trinamic controllers
+ * It acts as a slave to the M7 core and relay the different movement to the controllers
  * Based on version 3.3 of core-mbed
  */
 #include <SPI.h>
@@ -59,7 +60,6 @@
 #define TIMEOUT_MVMT 30000 //30 sec
 #define TIMEOUT 10000 //10 sec
 #define TIME_UPDATE 100 //100 ms -> we want to update position and target at this rate
-#define SCREW_TIME 6 //6 sec to screw/unscrew the cap
 
 #define USTEPS  256 //number of usteps by full steps
 #define STEP_TURN 200 //number of full steps in a single turn of the axis
@@ -84,12 +84,14 @@ bool Zrunning = false;
 bool Mrunning = false;
 bool Crunning = false;
 #define CLEAR_RUNNING Zrunning = false;Mrunning=false;Crunning = false;
+
 //Z positions
 uint32_t standbyZ = 5000000; //above the bottle so that precise can take and bring new bottles
 uint32_t Znear = 9000000; //Just above the cap
-uint32_t capHeight = 12000000; //Cap pressed
-uint32_t capDecapZ = 10500000; //Cap pressed + 6mm -> 10860000
-uint32_t screwStartZ = 10500000;
+uint32_t capHeight = 11800000; //Cap pressed
+//uint32_t capDecapZ = 10500000; //Cap pressed + 6mm -> 10860000
+//uint32_t screwStartZ = 10500000;
+//float ZScrewDist = 8; //8mm course to screw/unscrew the cap
 
 //M positions
 uint32_t standbyM = 10000;
@@ -99,8 +101,17 @@ uint32_t capHold = 3100000; //Gripped on the cap without little spikes
 
 //C positions
 uint32_t standbyC = 0;
-uint32_t capDecapC = -3000000; //0.75 turn to decap
-uint32_t capRecapC = -capDecapC;
+
+//Screw parameters
+#define SCREW_TIME 2 //6 sec to screw/unscrew the cap
+float capThread = 6; //mm/turn
+float unscrewRot = 0.8;//turn -> rotation necessary to unscrew the cap
+uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw
+uint32_t ZScrewingPos = capHeight-ZUnscrew; //position corresponding to end of unscrew movement/start of screw
+long CUnscrew = -ceil(unscrewRot*CGEAR*CTRANS*STEP_TURN*USTEPS); //C relative movement to unscrew/screw
+long CScrew = -CUnscrew;
+
+
 //Current motor values
 long ZPos = 0;
 long ZTarget = 0;
@@ -209,6 +220,7 @@ void loop() {
       delay(50);
       if(ControllerC.isEncoderFail()) ControllerC.init_CLPosital(C_ZERO);
       delay(50);
+      goToInitPos();
       DRIVER_OFF;
       setLowSpeed();
       DRIVER_ON;

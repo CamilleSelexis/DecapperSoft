@@ -24,15 +24,10 @@ void setHighSpeed(){
 //Speed used for screwing/unscrewing of the cap
 void setScrewingSpeed() {
 
-  float Zdist = 8; //Z moves up 8 mm to unscrew
-  float CTurn = 0.7; //C makes 0.8 turn
-  unsigned long Zmove = ceil(Zdist*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //in Usteps 1500000
-  unsigned long Cmove = ceil(CGEAR*CTRANS*STEP_TURN*USTEPS*CTurn); //in Usteps 2611200
-  unsigned long screwSpeedZ = ceil(Zmove/(SCREW_TIME)); //take 6 sec to unscrew the cap
-  unsigned long screwSpeedC = ceil(Cmove/(SCREW_TIME));
+
+  unsigned long screwSpeedZ = ceil(ZUnscrew/(SCREW_TIME)); //take 6 sec to unscrew the cap
+  unsigned long screwSpeedC = ceil(CUnscrew/(SCREW_TIME));
   
-  RPC.print("Screwing speed set to : ");RPC.println(screwSpeedZ);
-  RPC.print("Screwing speed set to : ");RPC.println(screwSpeedC);
   ControllerZ.setVMAX(screwSpeedZ<<8,0); //first 8 bits are for decimal
   delay(20);
   ControllerC.setVMAX(screwSpeedC<<8,0);

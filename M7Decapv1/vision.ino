@@ -3,43 +3,44 @@
 //Calls GetPos() and check its reliability over 2 iterations
 long finalPos() {
   //Init the camera
-  if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
-    Serial.println("Cam initialised");//initialise the camera
-  }
-  else{
-    Serial.println("Cam failed to initialize");
-  }
-  delay(100);
-  //
-  uint8_t tol = 5;
-  long temp1 = 0;
-  long temp2 = tol + 1;
+  cam.setStandby(false); //Put the camera out of standby
+  delay(5);
+
+  //Check that a flask is present and that the camera is properly working
+  //isFlaskPresent();
+  uint8_t tol = 5; //Tolerance between 2 algo runs to validate position of edge
+  long temp1 = detectEdges();
+  long temp2 = detectEdges();
   uint8_t i = 0;
-  while(abs(temp1-temp2)>tol && i<20){
+
+  while(abs(temp1-temp2)>tol && i<5){
+    cam.begin(RESOLUTION,IMAGE_MODE,15); //reset the camera
+    delay(30);
     temp1 = detectEdges();
-    delay(50);
+    delay(5);
     temp2 = detectEdges();
-    delay(50);
+    delay(5);
     i++;
   }
+  
 
-  //cam.standby(true);
+  cam.setStandby(true); //Camera back in standby mode
   double dist1 = 0;
   double dist2 = 0;
-  double pixtomm = 0.2111; //Computed with px size of 3 bump = 19mm = 90 px
+  double pixtomm = 0.21111; //space between 2 bumps = 10mm = 45 px
   double pi = 3.14159265358979323846;  //is definitely right
   double distToCap = 38; //Distance between the camera and the cap
   double radiusCap = 22.5;
   double capCenter = 152; //Position of the center of the cap on the camera (in px)
   //Distance between the center and the edge in mm
-  dist1 = (capCenter-temp1) * pixtomm; //Compute the dist with the center
+  dist1 = (temp1-capCenter) * pixtomm; //Compute the dist with the center
   // The positive direction for C is clockwise
   //calibration is the base position
   //24° is the angle between 2 bumps -> 15 bumps on each cap -> 360/15 = 24
   //We want to move between 2 bumps
   dist1 = ceil(uSToTurnC*(atan2(dist1,radiusCap)/(2*pi))+uSToTurnC/30);
   //+calibration -dist1*dist1*caliProp;
-  dist2 = (capCenter-temp2) * pixtomm;
+  dist2 = (temp2-capCenter) * pixtomm;
   dist2 = ceil(uSToTurnC*(atan2(dist2,radiusCap)/(2*pi))+uSToTurnC/30);
   Serial.print("Motor should move ");Serial.print(ceil((dist1+dist2)/2));
   Serial.println(" steps to align its claws");
@@ -57,10 +58,13 @@ long detectEdges() {
   int edgePos[100]; //Max size if every single pixel is a max (impossible)
   float edge[100];
   if (cam.grabFrame(FB) == 0){
-    Serial.println("Capture done");
+    //Serial.println("Capture done");
     Pfb = FB.getBuffer();
   }
-  else{Serial.println("Couldn't take a capture");}
+  else{
+    //Serial.println("Couldn't take a capture");
+    return 0;
+    }
   for(int i = 0; i<lx; i++){ //Crop the framebuffer and put it in 2D
     for(int j = 0; j<ly;j++) {
       cropped2D[i][j] = 0;
@@ -71,9 +75,9 @@ long detectEdges() {
     }
     //Serial.println("");
   }
-  Serial.println("---------------------------");
+  //Serial.println("---------------------------");
   //Compute gaussian avg on the picture with a convolution
-  Serial.println("Gaussian");
+  //Serial.println("Gaussian");
   convolution_2D(cropped2D,gaussian2D,result2D);
   for(int i = 0; i<lx; i++){
     for(int j = 0; j<ly; j++){
@@ -83,8 +87,8 @@ long detectEdges() {
     }
     //Serial.println("");
   }
-  Serial.println("-------------------------");
-  Serial.println("Sobel");
+  //Serial.println("-------------------------");
+  //Serial.println("Sobel");
   //Use sobel filter on the averaged picture to detect the edges
   convolution_2D(cropped2D,filter2D,result2D);
   for(int i = 0; i<lx; i++){
@@ -95,8 +99,8 @@ long detectEdges() {
     }
     //Serial.println("");
   }
-  Serial.println("--------------------------------");
-  Serial.println("Line average");
+  //Serial.println("--------------------------------");
+  //Serial.println("Line average");
   //Compute avg on each lines
   for(int i=0;i<ly;i++){
     line[i] = 0;
@@ -107,9 +111,9 @@ long detectEdges() {
     line[i] = line[i]/lx; // Avg each line
     //Serial.print(line[i]);Serial.print(" , ");
   }
-  Serial.println("");
-  Serial.println("-------------------");
-  Serial.println("moving average 2 & intensity thresholding");
+  //Serial.println("");
+  //Serial.println("-------------------");
+  //Serial.println("moving average 2 & intensity thresholding");
   movingAverage(line,lineAvg,2,ly);
   //Intensity Thresholding
   int int_thresh = 35; //Could add a smart way to compute the threshold by doing histograms
@@ -121,15 +125,15 @@ long detectEdges() {
       line[i] = lineAvg[i];
       //Serial.print(line[i]);Serial.print(" , ");
   }
-  Serial.println("");
-  Serial.println("-----------------");
-  Serial.println("Moving average 3");
+  //Serial.println("");
+  //Serial.println("-----------------");
+  //Serial.println("Moving average 3");
   movingAverage(line,lineAvg,3,ly);
   for (int i = 1;i<ly;i++) {
-    Serial.print(lineAvg[i]);Serial.print(" , ");
+    //Serial.print(lineAvg[i]);Serial.print(" , ");
   }
-    Serial.println("");
-  Serial.println("-----------------");
+    //Serial.println("");
+  //Serial.println("-----------------");
   //Edge finding -> doesn't consider the 5 pixels on the edge && verify that it is a local max
   int k = 0;
   for(int i = 5; i<ly-5;i++){ // don't consider the 5 pixel on the borders

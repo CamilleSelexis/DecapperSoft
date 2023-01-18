@@ -6,9 +6,9 @@ bool motor_running(){
   long time_start = millis();
   long time_update = time_start;
   //updateValues();
-  if(ZPos != ZTarget)    RPC.println("Z is running");
-  if(MPos != MTarget)    RPC.println("M is running");
-  if(CPos != CTarget)    RPC.println("C is running");
+  //if(ZPos != ZTarget)    RPC.println("Z is running");
+  //if(MPos != MTarget)    RPC.println("M is running");
+  //if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
       
     if(millis()-time_start > TIMEOUT_MVMT){
@@ -26,13 +26,13 @@ bool motor_running(){
     }
   }
   digitalWrite(LEDR,HIGH);
-  RPC.print("Move took ");RPC.print(millis()-time_start);RPC.println(" ms");
+  //RPC.print("Move took ");RPC.print(millis()-time_start);RPC.println(" ms");
   CLEAR_RUNNING;
   return true;
 }
 //Open the claws and lower the arm
 bool ApproachFlask(){
-  RPC.println("Going closer to the flask");
+  //RPC.println("Going closer to the flask");
   ControllerZ.setTarget(Znear);
   ControllerM.setTarget(Mopen);
   
@@ -44,10 +44,11 @@ bool ApproachFlask(){
   return true;
 }
 
-//Align the claws with the line on the cap
+//Align the claws with the bumps on the cap & go closer to the cap
 bool AlignCap(long capPos){
-  delay(100);
-  RPC.print("Aligning the claws with the cap ");RPC.println(capPos);
+  //RPC.print("Aligning claws & going closer");RPC.println(capPos);
+  ControllerZ.setTarget(capHeight);
+  ControllerM.setTarget(Mopen);
   ControllerC.setTarget(capPos);
   if(!motor_running()){
     RPC.println("Failed AlignCap");
@@ -58,22 +59,22 @@ bool AlignCap(long capPos){
 
 //perform the unscrewing movement -> lower the arm, close the claws, turn CCW while going up
 bool UnscrewCap(){
-  RPC.println("Press the cap");
-  ControllerZ.setTarget(capHeight);
+  //RPC.println("Press the cap");
+  /*ControllerZ.setTarget(capHeight);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
-  }
-  RPC.println("Hold the cap");
+  }*/
+  //RPC.println("Hold the cap");
   ControllerM.setTarget(capHold);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  RPC.println("Unscrewing of the cap");
+  //RPC.println("Unscrewing of the cap");
   setScrewingSpeed();
-  ControllerZ.setTarget(capDecapZ);
-  ControllerC.setTargetRelative(capDecapC);
+  ControllerZ.setTarget(ZScrewingPos);
+  ControllerC.setTargetRelative(CUnscrew);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
@@ -87,13 +88,26 @@ bool UnscrewCap(){
 bool goToStandby() {
   ControllerZ.setTarget(standbyZ);
   ControllerM.setTarget(standbyM);
-  ControllerC.setTarget(standbyC);
+  //ControllerC.setTarget(standbyC);
 
   if(!motor_running()){
     RPC.println("Failed goToStandby");
     return false;
   }
 
+  return true;
+}
+
+bool goToInitPos(){
+  ControllerM.setTarget(standbyM);
+  if(!motor_running()){
+    RPC.println("Failed goToStandby");
+    return false;}
+  ControllerZ.setTarget(standbyZ);
+  ControllerC.setTarget(standbyC);
+  if(!motor_running()){
+    RPC.println("Failed goToStandby");
+    return false;}
   return true;
 }
 bool goToStandbyWithCap() {
@@ -107,33 +121,39 @@ bool goToStandbyWithCap() {
 }
 //Perform screwing movement, lower the arm, turn CW while going down, open the claws
 bool ScrewCap(){
-  RPC.println("Going to screw height");
-  ControllerZ.setTarget(screwStartZ);
+  //RPC.println("Going to screw height");
+  ControllerZ.setTarget(ZScrewingPos);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
-  RPC.println("Screwing of the cap");
+  //RPC.println("Screwing of the cap");
   setScrewingSpeed();
   ControllerZ.setTarget(capHeight);
-  ControllerC.setTargetRelative(capRecapC);
+  ControllerC.setTargetRelative(CScrew);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
   setDefaultSpeed();
-  RPC.println("Release the cap");
+  //RPC.println("Release the cap");
   ControllerM.setTarget(capRelease);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
+  /*
+  ControllerZ.setTarget(Znear);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }*/
   return true;
 }
 bool decap(){
   //pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
   setDefaultSpeed();
-  if(!ApproachFlask()) return false;
+  //if(!ApproachFlask()) return false;
   if(!AlignCap(*pCPos)) return false;
   if(!UnscrewCap()) return false;
   if(!goToStandbyWithCap()) return false;
@@ -152,17 +172,16 @@ bool init_driver(TMC4361A *pController) {
   long initPos = pController->getEncoderPos();
   long targetPos = 0;
   long tolerance = 256; //1FS tolerance
-  //Set the speed to the calibration speed
   delay(50);
   for(int i = 1; i<=3; i++){
     switch(i){
-      case 1 : pController->setTargetRelative(50*256); //+90 °
-       targetPos = initPos + 50*256;
+      case 1 : pController->setTargetRelative(25*256); //+90 °
+       targetPos = initPos + 25*256;
        break;
-      case 2 : pController->setTargetRelative(100*256*(-1)); // -90°
-        targetPos = initPos - 50*256;
+      case 2 : pController->setTargetRelative(50*256*(-1)); // -90°
+        targetPos = initPos - 25*256;
         break;
-      case 3 : pController->setTargetRelative(50*256); // 0°
+      case 3 : pController->setTargetRelative(25*256); // 0°
         targetPos = initPos;
       break;
     }
@@ -176,40 +195,6 @@ bool init_driver(TMC4361A *pController) {
     }
   }
   RPC.println("Encoder is in tolerance");
-  return true;
-}
-//Check that the drivers are operating correctly and that the encoder return correct values
-bool init_driverOld(TMC4361A *pController){ //Not robust if starting pos is close to 90 or 270 °
-  //Sequentially check the drivers
-  float init_angle = pController->getEncoderAngle();
-  float target_angle = 0;
-  float tolerance = 5; //5°tolerance = 256*200/360*5 =~ 700 uSteps
-  //pController->setCurrentPos(0);
-  delay(50);
-  for(int i = 1; i<=3; i++){
-    switch(i){
-      case 1 : pController->setTargetRelative(50*256); //+90 °
-       target_angle = init_angle + 90 - (init_angle>270?360:0);
-      break;
-      case 2 : pController->setTargetRelative(100*256*(-1)); // -90°
-      target_angle = init_angle - 90 + (init_angle < 90?360:0);
-      
-      break;
-      case 3 : pController->setTargetRelative(50*256); // 0°
-      target_angle = init_angle + 0;
-      break;
-    }
-    while(!pController->isTargetReached()); //Wait for the motor to turn
-    //motor_running();
-    float new_angle = pController->getEncoderAngle(); //Should be equal to 90/0
-    RPC.print("angle_diff = ");RPC.println(abs(new_angle - target_angle));
-    if(abs(new_angle - target_angle) > tolerance){
-      RPC.print("Current Angle : " + String(pController->getEncoderAngle()));
-      RPC.println(" should be target_angle = " + String(target_angle));
-      return false;
-    }
-  }
-  RPC.println("Encoder is in range");
   return true;
 }
 

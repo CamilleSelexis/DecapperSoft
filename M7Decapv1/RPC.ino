@@ -60,12 +60,12 @@ bool currentMotorPositionRPC(long ZPosRPC, long MPosRPC, long CPosRPC,
   ZAngleEnc = ZAngleEncRPC;
   MAngleEnc = MAngleEncRPC;
   CAngleEnc = CAngleEncRPC;
-  ZTurnEnc = ZPosEnc - ZposBefore;
+  /*ZTurnEnc = ZPosEnc - ZposBefore;
   MTurnEnc = MPosEnc - MposBefore;
-  CTurnEnc = CPosEnc - CposBefore;
-  /*ZTurnEnc = ZTurnEncRPC;
+  CTurnEnc = CPosEnc - CposBefore;*/
+  ZTurnEnc = ZTurnEncRPC;
   MTurnEnc = MTurnEncRPC;
-  CTurnEnc = CTurnEncRPC;*/
+  CTurnEnc = CTurnEncRPC;
   ZDevEnc = ZDevEncRPC;
   MDevEnc = MDevEncRPC;
   CDevEnc = CDevEncRPC;

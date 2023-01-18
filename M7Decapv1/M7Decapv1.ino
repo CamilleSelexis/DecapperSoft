@@ -16,7 +16,6 @@
 #include "himax.h"
 
 #define DECAP_ID  4
-
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
  * A0-A6
@@ -125,9 +124,10 @@ const uint8_t thres = 8;         //Threshold of image detection 2->10
 const uint8_t n = 2;             //Size of the moving average avg done on 2n+1
 
 //Ethernet related variables ----------------------------------------------------
-byte mac[] = {0xDE, 0xA1, 0x00, 0x73, 0x24, 0x12};  //Mac adress
+byte mac[] = {0xDE, 0xA1, DECAP_ID, 0x73, 0x24, 0x12};  //Mac adress
 
-uint8_t ip_addr[4] = {192,168,1,101};
+
+uint8_t ip_addr[4] = {192,168,1,100+DECAP_ID}; //101,102,103,104
 String StringIP = String(ip_addr[0]) + "." + String(ip_addr[1]) + "." + String(ip_addr[2]) + "." + String(ip_addr[3]);
 IPAddress ip(ip_addr[0],ip_addr[1],ip_addr[2],ip_addr[3]); //
 EthernetServer server = EthernetServer(80);  // (port 80 is default for HTTP) 52 is the number of the lab
