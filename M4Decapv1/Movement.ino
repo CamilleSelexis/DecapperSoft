@@ -2,7 +2,7 @@
 
 //this function is called when a motor is running and returns true when each motor is done, return false if the movement timeouts (30 sec)
 bool motor_running(){
-  digitalWrite(LEDR,LOW);
+  LEDR_ON;
   long time_start = millis();
   long time_update = time_start;
   //updateValues();
@@ -10,25 +10,107 @@ bool motor_running(){
   //if(MPos != MTarget)    RPC.println("M is running");
   //if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
-      
-    if(millis()-time_start > TIMEOUT_MVMT){
-      RPC.println("Something is wrong and I can feel it");
-      ControllerZ.setTargetRelative(0);
-      ControllerM.setTargetRelative(0);
-      ControllerC.setTargetRelative(0);
-      digitalWrite(LEDR,HIGH);
-      return false;
-    }
     if(millis()-time_update > TIME_UPDATE){
 
       updateValues();
       time_update = millis();
     }
+    delay(50); //Read every 50 ms
+    //Check timeout condition
+    if(millis()-time_start > TIMEOUT_MVMT){
+      RPC.println("TimeOut during movement");
+      ControllerZ.setTargetRelative(0);
+      ControllerM.setTargetRelative(0);
+      ControllerC.setTargetRelative(0);
+
+      //Check on which axis the error happened
+      if(ControllerZ.isEncoderFail()){
+        //RPC.call("ZEncoderFail").as<bool>();
+        RPC.println("Encoder Z fail");
+        LEDR_OFF;
+        CLEAR_RUNNING;
+        return false;
+      }
+      if(ControllerM.isEncoderFail()){ //Encoder fail on M -> grip on bumps
+        //RPC.call("MEncoderFail").as<bool>();
+        RPC.println("Encoder M fail");
+        if(MTarget == capHold) { //Encoder fail happened when trying to grip
+          RPC.println("Realign routine start");
+          if( realignCap()){
+            LEDR_OFF;
+            CLEAR_RUNNING;
+            return true;
+          }
+          return false;
+        }
+        else {
+          LEDR_OFF;
+          CLEAR_RUNNING;
+          return false;
+        }
+
+      }
+      if(ControllerC.isEncoderFail()){
+        //RPC.call("CEncoderFail").as<bool>();
+        LEDR_OFF;
+        CLEAR_RUNNING;
+        return false;
+      }
+    LEDR_OFF;
+    CLEAR_RUNNING;
+    }
   }
-  digitalWrite(LEDR,HIGH);
-  //RPC.print("Move took ");RPC.print(millis()-time_start);RPC.println(" ms");
+  LEDR_OFF;
   CLEAR_RUNNING;
   return true;
+}
+bool realignCap(){
+  long time_start = millis();
+  
+  setLowSpeed();
+  //Déserre M -> 2500000
+  ControllerM.setTarget(capNear);
+  RPC.println("Current M target = ");RPC.println(ControllerM.getCurrentTarget());
+  delay(50);
+  while(!ControllerM.isTargetReached()){
+    //Motor is running
+    delay(50);
+    if(millis()-time_start > TIMEOUT_MVMT){
+      RPC.println("Timeout in realign");
+      return false; //Realign failed
+    }
+  }
+  updateValues();
+  RPC.print("In the for loop");
+  for(int i=1;i<4;i++){ //Essaie de réaligner en 4 fois
+    time_start = millis();
+    ControllerC.setTargetRelative(ceil(uSToTurnC/60)); //CW pour pas que le bouchon soit entraîné
+    ControllerM.setTarget(capHold);
+    while(!(ControllerM.isTargetReached() && ControllerC.isTargetReached()) && abs(ControllerM.getEncoderDev())<20000){ //Doit vérifier cette valeure
+      //Motor is running
+      delay(50);
+      if(millis()-time_start > TIMEOUT_MVMT) return false; //Realign failed
+    }
+    RPC.println(ControllerM.getEncoderDev());
+    //Si sortit du while: soit encoderDev>10000 -> doit réouvrir et retourner le C
+    //                    soit TargetReached -> realignement réussit
+    time_start = millis();
+    if(abs(ControllerM.getEncoderDev())>20000){
+      RPC.println("Retry realign");
+      ControllerM.setTarget(capNear);
+      while(!ControllerM.isTargetReached()){
+        //Motor is running
+        delay(50);
+        if(millis()-time_start > TIMEOUT_MVMT) return false; //Realign failed
+      }
+    }
+    else{
+      return true; //Realign success
+    }
+    updateValues();
+  }
+  setDefaultSpeed();
+  return false; //Realign failed
 }
 //Open the claws and lower the arm
 bool ApproachFlask(){
@@ -99,6 +181,7 @@ bool goToStandby() {
 }
 
 bool goToInitPos(){
+  setDefaultSpeed();
   ControllerM.setTarget(standbyM);
   if(!motor_running()){
     RPC.println("Failed goToStandby");

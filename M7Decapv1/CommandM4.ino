@@ -45,20 +45,17 @@ bool relMove(String currentLine){
   switch(axis){
     case 'Z':
       Serial.print("Calling ZrelMove with value : ");Serial.println(value);
-      ZposBefore = ZPosEnc;
       LEDR_ON;
       if(!RPC.call("ZrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
       break;
     case 'M':
-    MposBefore = MPosEnc;
       LEDR_ON;
       Serial.print("Calling MrelMove with value : ");Serial.println(value);
       if(!RPC.call("MrelMove",value).as<bool>())
         Serial.println("Error calling ZrelMove");
       break;
     case 'C':
-    CposBefore = CPosEnc;
       LEDR_ON;
       Serial.print("Calling CrelMove with value : ");Serial.println(value);
       if(!RPC.call("CrelMove",value).as<bool>())

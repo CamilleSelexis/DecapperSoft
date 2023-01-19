@@ -8,10 +8,10 @@ void Status(){
 //This function returns the status of the decapper
 //The status depends on 4 booleans, HS, capHeld, isInit and M4work
 //0 : decapper out of order
-//1 : decapper available
-//2 : decapper used
-//3 : decapper not init
-//4 : decapper working
+//1 : decapper fully operational
+//2 : decapper performed a decap and is waiting to recap
+//3 : decapper not ready
+//4 : decapper currently working
 int getStatus(){
   int statusDecap = 0;
   if(HS)statusDecap = 0; //Decapper HS
@@ -29,4 +29,20 @@ void resetFunc(void) {
   //It is a 32 bit register set bit 2 to request a reset and write 0x05FA to enable the write
   //See Arm® v7-M Architecture Reference Manual for more information
   *registerAddr = (unsigned long) 0x05FA0304;
+}
+
+//Check that the encoder are within their tolerances
+void checkEncoderStatus() {
+  if(ZPos == ZTarget){
+    if(abs(ZDevEnc) > 256) Zstate = false;
+    else Zstate = true;
+  }
+  if(MPos == MTarget){
+    if(abs(MDevEnc) > 256) Mstate = false;
+    else Mstate = true;
+  }
+  if(CPos == CTarget){
+    if(abs(CDevEnc) > 256) Cstate = false;
+    else Cstate = true;
+  }
 }

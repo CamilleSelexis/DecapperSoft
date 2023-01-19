@@ -37,12 +37,14 @@
 //Decapper 4
 #if DECAP_ID == 4
   #define Z_ZERO  3340374280
-  #define M_ZERO  3349592406
+  #define M_ZERO  3349659189
   #define C_ZERO  3352498375  
 
 #endif
 #define DRIVER_ON pinMode(EN_PIN,OUTPUT);digitalWrite(EN_PIN,LOW);
 #define DRIVER_OFF pinMode(EN_PIN,INPUT);
+#define LEDR_ON digitalWrite(LEDR,LOW);
+#define LEDR_OFF digitalWrite(LEDR,HIGH);
 #define EN_PIN  D14
 //#define STALL_PIN D5
 #define TGT_Z      D4
@@ -57,7 +59,7 @@
 #define CLK16_PIN D0
 #define RELAY_PIN A0
 
-#define TIMEOUT_MVMT 30000 //30 sec
+#define TIMEOUT_MVMT 15000 //30 sec
 #define TIMEOUT 10000 //10 sec
 #define TIME_UPDATE 100 //100 ms -> we want to update position and target at this rate
 
@@ -86,7 +88,7 @@ bool Crunning = false;
 #define CLEAR_RUNNING Zrunning = false;Mrunning=false;Crunning = false;
 
 //Z positions
-uint32_t standbyZ = 5000000; //above the bottle so that precise can take and bring new bottles
+uint32_t standbyZ = 7000000; //above the bottle so that precise can take and bring new bottles
 uint32_t Znear = 9000000; //Just above the cap
 uint32_t capHeight = 11800000; //Cap pressed
 //uint32_t capDecapZ = 10500000; //Cap pressed + 6mm -> 10860000
@@ -98,7 +100,8 @@ uint32_t standbyM = 10000;
 uint32_t Mopen = 10000;
 uint32_t capRelease = 10000; //Release the cap = open
 uint32_t capHold = 3100000; //Gripped on the cap without little spikes
-
+uint32_t capNear = 2000000;
+long uSToTurnC = ceil(STEP_TURN*CGEAR*CTRANS*USTEPS);
 //C positions
 uint32_t standbyC = 0;
 

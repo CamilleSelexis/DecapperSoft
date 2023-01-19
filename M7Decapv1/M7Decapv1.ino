@@ -72,28 +72,28 @@ volatile bool *M4work_pntr = &M4work;     //N'est pas utilisé pour le moment ma
 
 long task_start_time = 0; //variable to store the time needed to perform a given task
 //Values received from the M4 core
-long ZposBefore = 0;
-long MposBefore = 0;
-long CposBefore = 0;
-long posAfter = 0;
+
 long ZPos = 0;
 long ZTarget = 0;
 uint32_t ZPosEnc = 0;
 float ZAngleEnc = 0;
 float ZTurnEnc = 0;
 long ZDevEnc = 0;
+
 long MPos = 0;
 long MTarget = 0;
 uint32_t MPosEnc = 0;
 float MAngleEnc = 0;
 float MTurnEnc = 0;
 long MDevEnc = 0;
+
 long CPos = 0;
 long CTarget = 0;
 uint32_t CPosEnc = 0;
 float CAngleEnc = 0;
 float CTurnEnc = 0;
 long CDevEnc = 0;
+
 bool Zstate = false;
 bool Mstate = false;
 bool Cstate = false;
@@ -292,15 +292,15 @@ void loop() {
   
   LEDB_OFF;
   delay(250);
+  
+  checkEncoderStatus();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
   //if(*M4work_pntr){
-  if(1){
-    String buffer = "";
-    while (RPC.available()) {
-      buffer += (char)RPC.read(); // Fill the buffer with characters
-    }
-    if (buffer.length() > 0) {
-      Serial.print(buffer);
-    }
+  String buffer = "";
+  while (RPC.available()) {
+    buffer += (char)RPC.read(); // Fill the buffer with characters
+  }
+  if (buffer.length() > 0) {
+    Serial.print(buffer);
   }
 }
