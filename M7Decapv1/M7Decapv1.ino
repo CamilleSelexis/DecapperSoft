@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  4
+#define DECAP_ID  1
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
  * A0-A6

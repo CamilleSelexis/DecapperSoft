@@ -14,11 +14,12 @@
 #include "RPC.h"
 
 #define DECAP_ID 4
+//Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
-  #define Z_ZERO  0
-  #define M_ZERO  0
-  #define C_ZERO  0
+  #define Z_ZERO  3349898579
+  #define M_ZERO  3352945773 // 502164 -3000000 = 0
+  #define C_ZERO  2429052
 #endif
 //Decapper 2
 #if DECAP_ID == 2
@@ -88,7 +89,7 @@ bool Crunning = false;
 #define CLEAR_RUNNING Zrunning = false;Mrunning=false;Crunning = false;
 
 //Z positions
-uint32_t standbyZ = 7000000; //above the bottle so that precise can take and bring new bottles
+uint32_t standbyZ = 6000000; //above the bottle so that precise can take and bring new bottles
 uint32_t Znear = 9000000; //Just above the cap
 uint32_t capHeight = 11800000; //Cap pressed
 //uint32_t capDecapZ = 10500000; //Cap pressed + 6mm -> 10860000
@@ -189,7 +190,7 @@ void loop() {
     case 0: //standby state
       delay(250);
       updateValues(); //Nothing to update anyway
-
+      //RPC.print("Multiturn = ");RPC.print(MPosEnc>>17);RPC.print(" SingleTurn = ");RPC.println(MPosEnc & 0x1FFFF);
       break;
       
     case 1: //Decap
