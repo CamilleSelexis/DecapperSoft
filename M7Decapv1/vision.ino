@@ -30,8 +30,8 @@ long finalPos() {
   double pixtomm = 0.21111; //space between 2 bumps = 10mm = 45 px
   double pi = 3.14159265358979323846;  //is definitely right
   double distToCap = 38; //Distance between the camera and the cap
-  double radiusCap = 22.5;
-  double capCenter = 152; //Position of the center of the cap on the camera (in px)
+  double radiusCap = 22.5; //radius of the Cap
+  double capCenter = CAP_CENTER; //Position of the center of the cap on the camera (in px)
   //Distance between the center and the edge in mm
   dist1 = (temp1-capCenter) * pixtomm; //Compute the dist with the center
   // The positive direction for C is clockwise
@@ -200,7 +200,7 @@ void convolution_2D(float N[lx][ly], float M[3][3], float P[lx][ly]) {
 }
 //Takes a capture and prints it
 void printCapture(){
-  /*
+  
   if (cam.grabFrame(FB) == 0){
     Serial.println("Capture done");
     Pfb = FB.getBuffer();
@@ -211,7 +211,7 @@ void printCapture(){
       Serial.println();
     }
   }
-  else{Serial.println("Couldn't take a capture");}*/
+  else{Serial.println("Couldn't take a capture");}
 }
 
 void printCrop(){

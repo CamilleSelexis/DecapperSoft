@@ -15,7 +15,23 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  1
+#define DECAP_ID  3
+#if DECAP_ID == 1
+  #define CAP_CENTER 160 //Position of the center of the cap in px
+  #define CAP_HEIGHT 230
+#endif
+#if DECAP_ID == 2
+  #define CAP_CENTER 148 //Position of the center of the cap in px
+  #define CAP_HEIGHT 230
+#endif
+#if DECAP_ID == 3
+  #define CAP_CENTER 154 //Position of the center of the cap in px
+  #define CAP_HEIGHT 250
+#endif
+#if DECAP_ID == 4
+  #define CAP_CENTER 152 //Position of the center of the cap in px
+  #define CAP_HEIGHT 230
+#endif
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
  * A0-A6
@@ -109,8 +125,8 @@ FrameBuffer FB(imgH,imgW,1);
 uint8_t fb[imgW*imgH];        //Buffer for the image capture
 uint8_t *Pfb = fb; 
 
-const int cropx[2] = {230,250};    //Size of the cropped image in the width
-const int cropy[2] = {100,200};   //Size of the cropped image in the height
+const int cropx[2] = {CAP_HEIGHT,CAP_HEIGHT+20};    //Size of the cropped image in the width
+const int cropy[2] = {CAP_CENTER-50,CAP_CENTER+50};   //Size of the cropped image in the height
 const int ly = cropy[1]-cropy[0]; //Length of the cropped dimmensions
 const int lx = cropx[1]-cropx[0];
 
@@ -274,9 +290,9 @@ void loop() {
           Serial.println("------------------------");
           finalPos();
           //detectEdges();
-          //printCapture(); //print on Serial Monitor
+          printCapture(); //print on Serial Monitor
           Serial.println("------------------------");
-          //printCrop();
+          printCrop();
           Serial.println("-------------------------");
         }
       }//if(client.available())

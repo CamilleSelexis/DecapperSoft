@@ -13,26 +13,27 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 4
+#define DECAP_ID 3
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
   #define Z_ZERO  3349898579
-  #define M_ZERO  3352945773 // 502164 -3000000 = 0
+  #define M_ZERO  3352948773 // 502164 -3000000 = 0
   #define C_ZERO  2429052
 #endif
 //Decapper 2
 #if DECAP_ID == 2
-  #define Z_ZERO  0
-  #define M_ZERO  0
-  #define C_ZERO  0 
+// 3354193706  3355753764 - //310554  1935450 // 60626 1685450Encoder  3355434317
+  #define Z_ZERO  3353994826
+  #define M_ZERO  3607574
+  #define C_ZERO  3324718694 
 
 #endif
 //Decapper 3
 #if DECAP_ID == 3
-  #define Z_ZERO  0
-  #define M_ZERO  0
-  #define C_ZERO  0 
+  #define Z_ZERO  3347621535
+  #define M_ZERO  3353170522
+  #define C_ZERO  3226765910
 
 #endif
 //Decapper 4
@@ -60,7 +61,7 @@
 #define CLK16_PIN D0
 #define RELAY_PIN A0
 
-#define TIMEOUT_MVMT 15000 //30 sec
+#define TIMEOUT_MVMT 15000 //15 sec
 #define TIMEOUT 10000 //10 sec
 #define TIME_UPDATE 100 //100 ms -> we want to update position and target at this rate
 

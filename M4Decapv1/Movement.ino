@@ -253,6 +253,7 @@ bool recap(){
 }
 bool init_driver(TMC4361A *pController) {
   long initPos = pController->getEncoderPos();
+  long time_start = millis();
   long targetPos = 0;
   long tolerance = 256; //1FS tolerance
   delay(50);
@@ -268,7 +269,9 @@ bool init_driver(TMC4361A *pController) {
         targetPos = initPos;
       break;
     }
-    while(!pController->isTargetReached()); //Wait for the motor to turn
+    while(!pController->isTargetReached()){
+    if(millis()-time_start > TIMEOUT_MVMT) return false; //Wait for the motor to turn
+    }
     //motor_running();
     long newPos = pController->getEncoderPos(); //Should be equal to 50*256
     RPC.print("Position difference = ");RPC.println(abs(newPos - targetPos));
