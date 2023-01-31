@@ -12,22 +12,10 @@ void init_RPC(){
   RPC.bind("ZsetCurrentScaling",launchZsetCurrentScaling);
   RPC.bind("MsetCurrentScaling",launchMsetCurrentScaling);
   RPC.bind("CsetCurrentScaling",launchCsetCurrentScaling);
+  RPC.bind("stopAllMoves",launchstopAllMoves);
   RPC.bind("initControllers",launchinitControllers);
-  /*RPC.bind("ZCurrentPos",ZCurrentPos);
-  RPC.bind("MCurrentPos",MCurrentPos);
-  RPC.bind("CCurrentPos",CCurrentPos);
-  RPC.bind("ApproachFlask",ApproachFlask);
-  RPC.bind("Get_flask",Get_flaskgo);
-  RPC.bind("Align",Aligngo);
-  RPC.bind("Unscrew",Unscrewgo);
-  RPC.bind("reScrew",reScrewgo);
-  RPC.bind("Bringback",Bringbackgo);
-  RPC.bind("untigh_up",untigh_upgo);
-  RPC.bind("isMVT",isMVT);
-  RPC.bind("GetDown",Getdowngo);
-  RPC.bind("GoToStandby",GoToStandby);
-  RPC.bind("setParams",SetParams);
-  RPC.bind("readM4Params",readM4Params);*/
+  RPC.bind("resumeMoves",launchResume);
+  RPC.bind("abortMoves",launchAbort);
 }
 
 void getCurrentPosition(){
@@ -85,4 +73,12 @@ void initControllers(){
   ControllerZ.begin();
   ControllerM.begin();
   ControllerC.begin();
+}
+
+bool abortMoves() {
+  checkpoints = 0;
+  recapFlag = false;
+  decapFlag = false;
+  stopRoutine = false;
+  *Pstate = 3;
 }

@@ -147,3 +147,27 @@ bool setCurrentScaling(String currentLine){
 void initControllers(){
   RPC.call("initControllers").as<bool>();
 }
+
+bool stopAllMoves(){
+  if(!RPC.call("stopAllMoves").as<bool>()){
+    Serial.println("Error calling stopAllMoves");
+    return false;
+  }
+  Serial.println("Great Success!");
+  return true;
+}
+
+bool resumeMoves(){
+  if(!RPC.call("resumeMoves").as<bool>())
+    return false;
+  stopCalled = false; //reset stopCalled
+  return true;
+}
+
+bool abortMoves(){
+  stopCalled = false;
+  RPC.call("abortMoves").as<bool>();
+
+  return true;
+  
+}

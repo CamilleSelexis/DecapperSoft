@@ -93,10 +93,11 @@ void homePage(EthernetClient* client_pntr){
   client_pntr->println("<p><a href=\"http://" + StringIP + "/capture\">Capture</a></p>");
   client_pntr->println("<p><a href=\"http://" + StringIP + "/decapperStatus\">Status</a></p>");
   client_pntr->println("<p><a href=\"http://" + StringIP + "/reset\">Reset</a></p>");
+  client_pntr->println("<p><a href=\"http://" + StringIP + "/stopAllMoves\">Stop</a></p>");
   client_pntr->println("<p> Other functions : </p>");
   client_pntr->println("<p> Set VMAX : /15000ZsetVMAX set Z speed to 15000 Usteps/s = 0.3 RPS 0-" + String(VMAX_LIMIT) + "</p>");
   client_pntr->println("<p> Set Current Scaling : /25MsetCurrentScaling set M current scaling value to 25 0-" +String(CS_LIMIT) + "</p>");
-  client_pntr->println("<p> Relative move : /+52000ZrelMove Z axis will perform a relative move of 52000 Usteps" + String(RELMOVE_LIMIT) + "</p>");
+  client_pntr->println("<p> Relative move : /+52000ZrelMove Z axis will perform a relative move of 52000 Usteps // limit=" + String(RELMOVE_LIMIT) + "</p>");
   client_pntr->println("</body>");
   client_pntr->println("</html>");
   

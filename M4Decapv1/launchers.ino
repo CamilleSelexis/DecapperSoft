@@ -1,8 +1,8 @@
 //use launchers so that the M7 is not held occupied
 
-int launchDecap(long Cpos){
+int launchDecap(long CAlignement){
   *Pstate = 1;
-  *pCPos = Cpos;
+  *pCAlignValue = CAlignement;
   return true;
 }
 
@@ -23,6 +23,16 @@ byte launchSetParams() {
 
 bool launchReadParams() {
   *Pstate = 5;
+  return true;
+}
+
+bool launchResume(){
+  *Pstate = 6;
+  return true;
+}
+
+bool launchAbort() {
+  *Pstate = 7;
   return true;
 }
 
@@ -79,5 +89,14 @@ bool launchCsetCurrentScaling(int value){
 }
 bool launchinitControllers(){
   *Pstate = 101;
+  return true;
+}
+
+bool launchstopAllMoves(){ //Emergency Stop
+  DRIVER_OFF;
+  stopRoutine = true;
+  //ControllerC.setTargetRelative(0);
+  //ControllerM.setTargetRelative(0);
+  //ControllerZ.setTargetRelative(0);
   return true;
 }

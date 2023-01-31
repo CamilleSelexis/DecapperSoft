@@ -18,21 +18,25 @@ bool initDone(bool ZEnc, bool MEnc, bool CEnc){
   return true;
 }
 
-bool decapDone(){
+bool decapDone(bool decapSuccess){
   *M4work_pntr = false;
-  *capHeld_pntr = true;
   LEDR_OFF;
   RELAY_OFF;
   Serial.print("decapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
+  if(decapSuccess){
+     *capHeld_pntr = true;
+  }
   return true;
 }
 
-bool recapDone(){
+bool recapDone(bool recapSuccess){
   *M4work_pntr = false;
-  *capHeld_pntr = false;
   LEDR_OFF;
   RELAY_OFF;
   Serial.print("recapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
+  if(recapSuccess){
+    *capHeld_pntr = true;
+  }
   return true;
 }
 //---------------------------------------------------Can be removed

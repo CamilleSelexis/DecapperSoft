@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 3
+#define DECAP_ID 4
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -79,14 +79,19 @@
 #define F_CPU       200000000
 uint32_t ExtClk;
 
-long Cpos = 0;
-long *pCPos = &Cpos;
+long CAlignValue = 0;
+long *pCAlignValue = &CAlignValue;
 int state = 0; //State used by the finite state machine
 int* Pstate = &state;
 
 bool Zrunning = false;
 bool Mrunning = false;
 bool Crunning = false;
+bool stopRoutine = false;
+bool CmdResult = false;
+bool decapFlag = false; //Set to true during decap
+bool recapFlag = false; //Set to true during recap
+int checkpoints = 0; //This value is incremented before each move so that we have a trace of where we are in the process
 #define CLEAR_RUNNING Zrunning = false;Mrunning=false;Crunning = false;
 
 //Z positions
@@ -195,11 +200,9 @@ void loop() {
       break;
       
     case 1: //Decap
-      RPC.print("Launching Decap with Cpos : ");RPC.println(*pCPos);
-      DRIVER_ON;
-      decap();
-      DRIVER_OFF;
-      if(!RPC.call("decapDone").as<bool>())
+      RPC.print("Launching Decap with Cpos : ");RPC.println(*pCAlignValue);
+      CmdResult = decap(0);
+      if(!RPC.call("decapDone",CmdResult).as<bool>())
         RPC.println("Error sending task completed");
       state = 0; //return to default state
       //send decap done to M7
@@ -207,18 +210,18 @@ void loop() {
       
     case 2: //Recap
       RPC.print("Launching recap routine");
-      DRIVER_ON;
-      recap();
-      DRIVER_OFF;
-      if(!RPC.call("recapDone").as<bool>())
+      CmdResult = recap(0);
+      if(!RPC.call("recapDone",CmdResult).as<bool>())
         RPC.println("Error sending task completed");
       state = 0; //return to default state
+
       //send recap done to M7
       break;
       
     case 3: //Init_driver
       //If calibration failed, redo it
       DRIVER_ON;
+      stopRoutine = false;
       if(ControllerZ.isEncoderFail()) ControllerZ.init_CLPosital(Z_ZERO);
       delay(50);
       if(ControllerM.isEncoderFail()) ControllerM.init_CLPosital(M_ZERO);
@@ -226,9 +229,9 @@ void loop() {
       if(ControllerC.isEncoderFail()) ControllerC.init_CLPosital(C_ZERO);
       delay(50);
       goToInitPos();
-      DRIVER_OFF;
+      //DRIVER_OFF;
       setLowSpeed();
-      DRIVER_ON;
+      //DRIVER_ON;
       RPC.println("Axis Z");
       Zstate = init_driver(pControllerZ);
       RPC.println("------------------");
@@ -240,6 +243,7 @@ void loop() {
       RPC.println("-------------------");
       DRIVER_OFF;
       setDefaultSpeed();
+      stopRoutine = false;
       delay(500); //To properly print all messages
       if(!RPC.call("initDone",Zstate,Mstate,Cstate).as<bool>())
           RPC.println("Error sending task completed");
@@ -250,6 +254,22 @@ void loop() {
       break;
     case 5: //read parameters
       break;
+
+    case 6: //resume Moves
+      RPC.print("M4 resuming last move");
+      resumeMoves();
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0;
+      break;
+    case 7: //abort Moves
+      RPC.print("M4 abort");
+      abortMoves();
+      if(!RPC.call("M4TaskCompleted").as<bool>())
+        RPC.println("Error sending task completed");
+      state = 0;
+      break;
+      
     case 11: //manual Z relMove
       RPC.print("M4: Moving Axis Z by ");RPC.println(Zvalue);
       DRIVER_ON;

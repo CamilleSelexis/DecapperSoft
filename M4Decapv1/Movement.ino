@@ -112,23 +112,36 @@ bool realignCap(){
   setDefaultSpeed();
   return false; //Realign failed
 }
-//Open the claws and lower the arm
-bool ApproachFlask(){
-  //RPC.println("Going closer to the flask");
-  ControllerZ.setTarget(Znear);
-  ControllerM.setTarget(Mopen);
+//----------------------------------------------------------------------------------
+//Decapping routine -----------------------------------------------------------
+bool decap(int resumeVal){
+  decapFlag = true;
+  stopRoutine = false;
+  DRIVER_ON;
+  //pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
+  setDefaultSpeed();
+  //if(!ApproachFlask()) return false;
+  if(resumeVal <= 1)
+    if(!AlignCap(*pCAlignValue) || stopRoutine) return false;
+  if(resumeVal <= 2)
+    if(!CloseClaws() || stopRoutine) return false;
+  if(resumeVal <= 3)
+    if(!Unscrew() || stopRoutine) return false;
+  //if(!UnscrewCap() || stopRoutine) return false;
+  if(resumeVal <= 4)
+    if(!goToStandbyWithCap() || stopRoutine) return false;
+  checkpoints = 10; //Process is finished
+  DRIVER_OFF;
   
-  if(!motor_running()){//wait for the driver to finish their movements
-    RPC.println("Failed ApproachFlask");
-    return false;
-  }
-
+  stopRoutine = false;
+  decapFlag = false;
   return true;
 }
 
 //Align the claws with the bumps on the cap & go closer to the cap
 bool AlignCap(long capPos){
   //RPC.print("Aligning claws & going closer");RPC.println(capPos);
+  checkpoints = 1;
   ControllerZ.setTarget(capHeight);
   ControllerM.setTarget(Mopen);
   ControllerC.setTarget(capPos);
@@ -138,21 +151,17 @@ bool AlignCap(long capPos){
   }
   return true;
 }
-
-//perform the unscrewing movement -> lower the arm, close the claws, turn CCW while going up
-bool UnscrewCap(){
-  //RPC.println("Press the cap");
-  /*ControllerZ.setTarget(capHeight);
-  if(!motor_running()){
-    RPC.println("Failed UnscrewCap");
-    return false;
-  }*/
-  //RPC.println("Hold the cap");
+bool CloseClaws(){
+  checkpoints = 2;
   ControllerM.setTarget(capHold);
   if(!motor_running()){
     RPC.println("Failed UnscrewCap");
     return false;
   }
+  return true;
+}
+bool Unscrew(){
+  checkpoints = 3;
   //RPC.println("Unscrewing of the cap");
   setScrewingSpeed();
   ControllerZ.setTarget(ZScrewingPos);
@@ -165,21 +174,89 @@ bool UnscrewCap(){
   
   return true;
 }
-
-//Go to the standby position
-bool goToStandby() {
+bool goToStandbyWithCap() {
+  checkpoints = 4;
   ControllerZ.setTarget(standbyZ);
-  ControllerM.setTarget(standbyM);
-  //ControllerC.setTarget(standbyC);
-
-  if(!motor_running()){
+    if(!motor_running()){
     RPC.println("Failed goToStandby");
     return false;
   }
 
   return true;
 }
+//-------------------------------------------------------------------------------------------
+//Recapping Routine -------------------------------------------------------------------------
+bool recap(int resumeVal){
+  recapFlag = true;
+  DRIVER_ON;
+  stopRoutine = false;
+  setDefaultSpeed();
+  checkpoints = 1;
+  //if(!ScrewCap() || stopRoutine) return false;
+  if(resumeVal <= 1)
+    if(!goToRecap() || stopRoutine) return false;
+  if(resumeVal <= 2)
+    if(!Screw() || stopRoutine) return false;
+  if(resumeVal <= 3)
+    if(!OpenClaws() || stopRoutine) return false;
+  if(resumeVal <= 4)
+    if(!goToStandby() || stopRoutine) return false;
+  checkpoints = 10; //Process is finished
+  
+  DRIVER_OFF;
+  stopRoutine = false;
+  recapFlag = false;
+  
+  return true;
+}
 
+bool goToRecap(){
+  checkpoints = 1;
+  ControllerZ.setTarget(ZScrewingPos);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  return true;
+}
+
+bool Screw(){
+  checkpoints = 2;
+  //RPC.println("Screwing of the cap");
+  setScrewingSpeed();
+  ControllerZ.setTarget(capHeight);
+  ControllerC.setTargetRelative(CScrew);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  return true;
+}
+bool OpenClaws(){
+  checkpoints = 3;
+  setDefaultSpeed();
+  //RPC.println("Release the cap");
+  ControllerM.setTarget(capRelease);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  return true;
+}
+//Go to the standby position
+bool goToStandby() {
+  checkpoints = 4;
+  ControllerZ.setTarget(standbyZ);
+  ControllerM.setTarget(standbyM);
+  //ControllerC.setTarget(standbyC);
+  if(!motor_running()){
+    RPC.println("Failed goToStandby");
+    return false;
+  }
+  return true;
+}
+//-----------------------------------------------------------------
+//Initialize Driver & Controller Routine---------------------------
 bool goToInitPos(){
   setDefaultSpeed();
   ControllerM.setTarget(standbyM);
@@ -193,64 +270,7 @@ bool goToInitPos(){
     return false;}
   return true;
 }
-bool goToStandbyWithCap() {
-  ControllerZ.setTarget(standbyZ);
-    if(!motor_running()){
-    RPC.println("Failed goToStandby");
-    return false;
-  }
 
-  return true;
-}
-//Perform screwing movement, lower the arm, turn CW while going down, open the claws
-bool ScrewCap(){
-  //RPC.println("Going to screw height");
-  ControllerZ.setTarget(ZScrewingPos);
-  if(!motor_running()){
-    RPC.println("Failed UnscrewCap");
-    return false;
-  }
-  //RPC.println("Screwing of the cap");
-  setScrewingSpeed();
-  ControllerZ.setTarget(capHeight);
-  ControllerC.setTargetRelative(CScrew);
-  if(!motor_running()){
-    RPC.println("Failed UnscrewCap");
-    return false;
-  }
-  setDefaultSpeed();
-  //RPC.println("Release the cap");
-  ControllerM.setTarget(capRelease);
-  if(!motor_running()){
-    RPC.println("Failed UnscrewCap");
-    return false;
-  }
-  /*
-  ControllerZ.setTarget(Znear);
-  if(!motor_running()){
-    RPC.println("Failed UnscrewCap");
-    return false;
-  }*/
-  return true;
-}
-bool decap(){
-  //pin_init(); //pin_init after the camera was used to be able to use pin D13 ?
-  setDefaultSpeed();
-  //if(!ApproachFlask()) return false;
-  if(!AlignCap(*pCPos)) return false;
-  if(!UnscrewCap()) return false;
-  if(!goToStandbyWithCap()) return false;
-  
-  return true;
-}
-
-bool recap(){
-  setDefaultSpeed();
-  if(!ScrewCap()) return false;
-  if(!goToStandby()) return false;
-  
-  return true;
-}
 bool init_driver(TMC4361A *pController) {
   long initPos = pController->getEncoderPos();
   long time_start = millis();
@@ -283,7 +303,8 @@ bool init_driver(TMC4361A *pController) {
   RPC.println("Encoder is in tolerance");
   return true;
 }
-
+//--------------------------------------------------------------------------------------
+//Realtive Moves------------------------------------------------------------------------
 bool ZrelMove(long value){
   RPC.print("Z will move by ");RPC.println(value);
   ControllerZ.setTargetRelative(value);
@@ -309,6 +330,152 @@ bool CrelMove(long value){
     RPC.println("Failed the relative move on C");
     return false;
   }
+  return true;
+}
+//-------------------------------------------------------------------------------
+bool resumeMoves(){
+  //Movement was interrupted during decap
+  if(decapFlag){
+    switch(checkpoints){
+      case 1: //Interrupt during approach phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc); //Current true position
+        //ControllerZ.setTarget(capHeight);
+        ControllerM.setCurrentPos(MPos-MDevEnc); //Current true position
+        //ControllerM.setTarget(Mopen);
+        ControllerC.setCurrentPos(CPos-CDevEnc); //Current true position
+        //ControllerC.setTarget(*pCAlignValue);
+        decap(1); //Do everything
+        return true;
+      break;
+      case 2: //Interrupt during tightening phase
+        ControllerM.setCurrentPos(MPos-MDevEnc);
+        //ControllerM.setTarget(capHold);
+        decap(2);
+        return true;
+      break;
+      case 3: //Interrupt during unscrewing phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc);
+        //ControllerZ.setTarget(ZScrewingPos);
+        ControllerC.setCurrentPos(CPos-CDevEnc);
+        ControllerC.setTarget(CPos);
+        decap(3);
+        return true;
+      break;
+      case 4: //Interrupt during the up phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc);
+        decap(4);
+        return true;
+      break;
+      case 10: //Decap was done
+        decap(5); //Launch decap without any moves only to properly set all variables
+      break;
+    }
+  }
+  //Movement was interrupted during recap
+  else if(recapFlag){
+    switch(checkpoints){
+      case 1: //Interrupt during approach phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc); //Current true position
+        ControllerZ.setTarget(ZScrewingPos);
+        recap(1); //Do everything
+        return true;
+      break;
+      case 2: //Interrupt during screwing phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc);
+        //ControllerZ.setTarget(capHeight);
+        ControllerC.setCurrentPos(CPos-CDevEnc);
+        ControllerC.setTarget(CPos);
+        recap(2);
+        return true;
+      break;
+      case 3: //Interrupt during opening of the claws
+        ControllerM.setCurrentPos(MPos-MDevEnc);
+        recap(3);
+        return true;
+      break;
+      case 4: //Interrupt during the up phase
+        ControllerZ.setCurrentPos(ZPos-ZDevEnc);
+        recap(4);
+      break;
+      case 10: //Recap was done
+       recap(5); //Launch recap without any moves only to properly set all variables
+      break;
+    }    
+  }
+  return true;
+}
+
+//Obsolete functions------------------------------------------------------------------------------
+//Open the claws and lower the arm
+bool ApproachFlask(){
+  //RPC.println("Going closer to the flask");
+  ControllerZ.setTarget(Znear);
+  ControllerM.setTarget(Mopen);
+  
+  if(!motor_running()){//wait for the driver to finish their movements
+    RPC.println("Failed ApproachFlask");
+    return false;
+  }
+
+  return true;
+}
+//perform the unscrewing movement -> lower the arm, close the claws, turn CCW while going up
+bool UnscrewCap(){
+  //RPC.println("Press the cap");
+  //RPC.println("Hold the cap");
+  checkpoints = 2;
+  ControllerM.setTarget(capHold);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  checkpoints = 3;
+  //RPC.println("Unscrewing of the cap");
+  setScrewingSpeed();
+  ControllerZ.setTarget(ZScrewingPos);
+  ControllerC.setTargetRelative(CUnscrew);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  setDefaultSpeed();
+  
+  return true;
+}
+
+//Perform screwing movement, lower the arm, turn CW while going down, open the claws
+bool ScrewCap(){
+  //RPC.println("Going to screw height");
+  checkpoints = 1;
+  ControllerZ.setTarget(ZScrewingPos);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  checkpoints = 2;
+  //RPC.println("Screwing of the cap");
+  setScrewingSpeed();
+  ControllerZ.setTarget(capHeight);
+  ControllerC.setTargetRelative(CScrew);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  checkpoints = 3;
+  setDefaultSpeed();
+  //RPC.println("Release the cap");
+  ControllerM.setTarget(capRelease);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }
+  checkpoints = 4;
+  /*
+  ControllerZ.setTarget(Znear);
+  if(!motor_running()){
+    RPC.println("Failed UnscrewCap");
+    return false;
+  }*/
   return true;
 }
 void test_motors(){

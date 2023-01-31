@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  3
+#define DECAP_ID  4
 #if DECAP_ID == 1
   #define CAP_CENTER 160 //Position of the center of the cap in px
   #define CAP_HEIGHT 230
@@ -32,6 +32,9 @@
   #define CAP_CENTER 152 //Position of the center of the cap in px
   #define CAP_HEIGHT 230
 #endif
+
+#define Sprintln(a) (Serial.println(a))
+#define Sprint(a)   (Serial.print(a))
 //Better to connect it to drv_enn of the TMC2660 to power off the mosfet and reduce heat generation
 /*Unconnected pin on the portenta board
  * A0-A6
@@ -86,6 +89,7 @@ bool *capHeld_pntr = &capHeld;
 volatile bool M4work = true;          //Cette variable est vrai lorsque le M4 effectue une tache
 volatile bool *M4work_pntr = &M4work;     //N'est pas utilisé pour le moment mais pourrait être utile
 
+bool stopCalled = false;
 long task_start_time = 0; //variable to store the time needed to perform a given task
 //Values received from the M4 core
 
@@ -165,7 +169,7 @@ void setup() {
   //init serial port
   Serial.begin(115200);
   //while(!Serial);
-  Serial.println("Setup start");
+  Sprintln("Setup start");//Serial.println("Setup start");
   RPC.begin();
   RPC.bind("M4TaskCompleted",M4TaskCompleted);
   RPC.bind("decapDone",decapDone);
@@ -176,41 +180,49 @@ void setup() {
   
   //Init the camera
   if(cam.begin(RESOLUTION, IMAGE_MODE, 15)){
-    Serial.println("Cam initialised");//initialise the camera
+    //Serial.println("Cam initialised");//initialise the camera
+    Sprintln("Cam init");
   }
   else{
-    Serial.println("Cam failed to initialize");
+    //Serial.println("Cam failed to initialize");
+    Sprintln("Cam failed to init");
   }
   cam.setStandby(true);                //Put it in standby mode
   
   //Init the Ethernet communications
   LEDB_ON;
   
-  Serial.println("Ethernet Coms starting...");
+  //Serial.println("Ethernet Coms starting...");
+  Sprintln("Ethernet Coms starting...");
   Ethernet.begin(mac,ip);  //Start the Ethernet coms
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    //Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    Sprintln("No Ethernet shield found, cannot run without it");
     while (true) {
       delay(1); // do nothing, no point running without Ethernet hardware
     }
   }
   if (Ethernet.linkStatus() == LinkOFF) {
-    Serial.println("Ethernet cable is not connected.");
+    //Serial.println("Ethernet cable is not connected.");
+    Sprintln("Ethernet cable connected");
   }
   // Start the server
   server.begin();           //"server" is the name of the object for comunication through ethernet
-  Serial.print("Ethernet server connected. Server is at ");
+  //Serial.print("Ethernet server connected. Server is at ");
+  Sprint("Ethernet server connected at ");
   //Serial.println(Ethernet.localIP());         //Gives the local IP through serial com
-  Serial.println(StringIP);
+  //Serial.println(StringIP);
+  Sprintln(Ethernet.localIP());
   
   LEDG_OFF;
-  Serial.println("Setup done");
+  //Serial.println("Setup done");
+  Sprintln("Setup done");
 }
 
 void loop() {
   LEDB_ON;
-  delay(250);
+  //delay(250);
   EthernetClient client = server.available();
   EthernetClient* client_pntr = &client;
   if(client){ //A client tries to connect 
@@ -285,6 +297,30 @@ void loop() {
           answerHttp(client_pntr,currentLine);
           initControllers();
         }
+        else if(currentLine.endsWith("stopAllMoves")){
+          //digitalWrite(EN_PIN,HIGH);
+          stopCalled = stopAllMoves();
+          if(stopCalled){
+            currentLine = "All moves stopped";
+          }
+          answerHttp(client_pntr,currentLine); //After this command the decapper will be waiting for an abort or resume command
+        }
+        else if(currentLine.endsWith("resumeMoves")){
+          //Resume last movement
+          if(stopCalled) { //Check that stopAllMoves was previously called
+            answerHttp(client_pntr,currentLine);
+            resumeMoves();
+          }
+          else answerHttpNo(client_pntr,currentLine,state);
+        }
+        else if(currentLine.endsWith("abortMoves")){
+          //Abort last movement
+          if(stopCalled){
+            answerHttp(client_pntr,currentLine);
+            abortMoves();
+          }
+          else answerHttpNo(client_pntr,currentLine,state);
+        }
         else if(currentLine.endsWith("capture")){
           answerHttpCapture(client_pntr,currentLine);
           Serial.println("------------------------");
@@ -307,7 +343,7 @@ void loop() {
   }//if(client)
   
   LEDB_OFF;
-  delay(250);
+  //delay(250);
   
   checkEncoderStatus();
   //If the M4 processor is currently working, we read the RPC every 200 ms to check for uncomming messages
