@@ -34,7 +34,7 @@ bool motor_running(){
       if(ControllerM.isEncoderFail()){ //Encoder fail on M -> grip on bumps
         //RPC.call("MEncoderFail").as<bool>();
         RPC.println("Encoder M fail");
-        if(MTarget == capHold) { //Encoder fail happened when trying to grip
+        if(MTarget == capHold && !stopRoutine) { //Encoder fail happened when trying to grip
           RPC.println("Realign routine start");
           if( realignCap()){
             LEDR_OFF;
@@ -344,13 +344,15 @@ bool resumeMoves(){
         //ControllerM.setTarget(Mopen);
         ControllerC.setCurrentPos(CPos-CDevEnc); //Current true position
         //ControllerC.setTarget(*pCAlignValue);
-        decap(1); //Do everything
+        CmdResult = decap(1); //Do everything
+        RPC.call("decapDone",CmdResult).as<bool>();
         return true;
       break;
       case 2: //Interrupt during tightening phase
         ControllerM.setCurrentPos(MPos-MDevEnc);
         //ControllerM.setTarget(capHold);
-        decap(2);
+        CmdResult = decap(2); //Do everything
+        RPC.call("decapDone",CmdResult).as<bool>();
         return true;
       break;
       case 3: //Interrupt during unscrewing phase
@@ -358,16 +360,20 @@ bool resumeMoves(){
         //ControllerZ.setTarget(ZScrewingPos);
         ControllerC.setCurrentPos(CPos-CDevEnc);
         ControllerC.setTarget(CPos);
-        decap(3);
+        CmdResult = decap(3); //Do everything
+        RPC.call("decapDone",CmdResult).as<bool>();
         return true;
       break;
       case 4: //Interrupt during the up phase
         ControllerZ.setCurrentPos(ZPos-ZDevEnc);
-        decap(4);
+        CmdResult = decap(4); //Do everything
+        RPC.call("decapDone",CmdResult).as<bool>();
         return true;
       break;
       case 10: //Decap was done
-        decap(5); //Launch decap without any moves only to properly set all variables
+        CmdResult = decap(5); //Do everything
+        RPC.call("decapDone",CmdResult).as<bool>(); //Launch decap without any moves only to properly set all variables
+        return true;
       break;
     }
   }
@@ -377,7 +383,8 @@ bool resumeMoves(){
       case 1: //Interrupt during approach phase
         ControllerZ.setCurrentPos(ZPos-ZDevEnc); //Current true position
         ControllerZ.setTarget(ZScrewingPos);
-        recap(1); //Do everything
+        CmdResult = recap(1); //Do everything
+        RPC.call("recapDone",CmdResult).as<bool>();
         return true;
       break;
       case 2: //Interrupt during screwing phase
@@ -385,20 +392,26 @@ bool resumeMoves(){
         //ControllerZ.setTarget(capHeight);
         ControllerC.setCurrentPos(CPos-CDevEnc);
         ControllerC.setTarget(CPos);
-        recap(2);
+        CmdResult = recap(2); //Do everything
+        RPC.call("recapDone",CmdResult).as<bool>();
         return true;
       break;
       case 3: //Interrupt during opening of the claws
         ControllerM.setCurrentPos(MPos-MDevEnc);
-        recap(3);
+        CmdResult = recap(3); //Do everything
+        RPC.call("recapDone",CmdResult).as<bool>();
         return true;
       break;
       case 4: //Interrupt during the up phase
         ControllerZ.setCurrentPos(ZPos-ZDevEnc);
-        recap(4);
+        CmdResult = recap(4); //Do everything
+        RPC.call("recapDone",CmdResult).as<bool>();
+        return true;
       break;
       case 10: //Recap was done
-       recap(5); //Launch recap without any moves only to properly set all variables
+        CmdResult = recap(5); //Do everything
+        RPC.call("recapDone",CmdResult).as<bool>(); //Launch recap without any moves only to properly set all variables
+        return true;
       break;
     }    
   }

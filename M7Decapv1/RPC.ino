@@ -35,7 +35,7 @@ bool recapDone(bool recapSuccess){
   RELAY_OFF;
   Serial.print("recapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   if(recapSuccess){
-    *capHeld_pntr = true;
+    *capHeld_pntr = false;
   }
   return true;
 }

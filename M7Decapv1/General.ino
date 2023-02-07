@@ -18,6 +18,7 @@ int getStatus(){
   else if(M4work) statusDecap = 4; //Decapper working
   else if(!isInit) statusDecap = 3; //Decapper not init
   else if(capHeld) statusDecap = 2; //Decapper has a cap held, ready for recap
+  else if(stopCalled) statusDecap = 5; //Stop has been called, need to perform a resume or abort before continuing
   else statusDecap = 1; //Decapper is ready
   
   return statusDecap; 
