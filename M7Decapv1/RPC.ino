@@ -6,16 +6,24 @@ bool M4TaskCompleted(){
 
 //Properly set the flags once the init is done
 bool initDone(bool ZEnc, bool MEnc, bool CEnc){
+  //reset all status flags
   *M4work_pntr = false;
   *isInit_pntr = true;
   *capHeld_pntr = false;
+  error = false;
   LEDR_OFF;
   RELAY_OFF;
   Zstate = ZEnc;
   Mstate = MEnc;
   Cstate = CEnc;
   Serial.print("initDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
-  return true;
+  if(ZEnc && MEnc && CEnc){
+    return true;    
+  }
+  else{
+    error = true;
+    return false;
+   }
 }
 
 bool decapDone(bool decapSuccess){
@@ -25,6 +33,10 @@ bool decapDone(bool decapSuccess){
   Serial.print("decapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   if(decapSuccess){
      *capHeld_pntr = true;
+  }
+  else{
+    error = true;
+    return false;
   }
   return true;
 }
@@ -36,6 +48,10 @@ bool recapDone(bool recapSuccess){
   Serial.print("recapDone, took ");Serial.print(millis()-task_start_time);Serial.println("ms");
   if(recapSuccess){
     *capHeld_pntr = false;
+  }
+  else{
+    error = true;
+    return false;
   }
   return true;
 }

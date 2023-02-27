@@ -79,7 +79,7 @@ uint32_t ExtClk;
 #define VMAX_LIMIT 1700000 //max value setVMAX accepts
 //State variables ------------------------------------------------------------------------
 bool HS = false; //If the decapper needs to be ignored
-
+bool error = false; //This flag is set to true if the decapper fails to execute a function
 bool isInit = false;          //Is the device init
 bool *isInit_pntr = &isInit;      //Goes true after the init routine
 
