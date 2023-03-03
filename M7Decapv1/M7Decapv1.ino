@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  1
+#define DECAP_ID  4
 #if DECAP_ID == 1
   #define CAP_CENTER 156 //Position of the center of the cap in px
   #define CAP_HEIGHT 240
@@ -79,7 +79,7 @@ uint32_t ExtClk;
 #define VMAX_LIMIT 1700000 //max value setVMAX accepts
 //State variables ------------------------------------------------------------------------
 bool HS = false; //If the decapper needs to be ignored
-bool error = false; //This flag is set to true if the decapper fails to execute a function
+bool errorState = false; //This flag is set to true if the decapper fails to execute a function
 bool isInit = false;          //Is the device init
 bool *isInit_pntr = &isInit;      //Goes true after the init routine
 

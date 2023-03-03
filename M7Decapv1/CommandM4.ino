@@ -76,7 +76,7 @@ bool setVMAX(String currentLine){
   for(int i=1; i<valSize; i++){
     value = value*10 + currentLine[i]-48; // 48 is ASCII for 0
   }
-  if(value > 170000){ //Max = 200RPM = 3.33 RPS -> 200*256*200/60
+  if(value > 1024000){ //Max = 1200RPM = 20 RPS -> 1200*256*200/60
     Serial.println("Value out of range");
     value = 0;
     return false;

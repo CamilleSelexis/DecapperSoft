@@ -10,7 +10,7 @@ bool initDone(bool ZEnc, bool MEnc, bool CEnc){
   *M4work_pntr = false;
   *isInit_pntr = true;
   *capHeld_pntr = false;
-  error = false;
+  errorState = false;
   LEDR_OFF;
   RELAY_OFF;
   Zstate = ZEnc;
@@ -21,7 +21,7 @@ bool initDone(bool ZEnc, bool MEnc, bool CEnc){
     return true;    
   }
   else{
-    error = true;
+    errorState = true;
     return false;
    }
 }
@@ -35,7 +35,7 @@ bool decapDone(bool decapSuccess){
      *capHeld_pntr = true;
   }
   else{
-    error = true;
+    errorState = true;
     return false;
   }
   return true;
@@ -50,7 +50,7 @@ bool recapDone(bool recapSuccess){
     *capHeld_pntr = false;
   }
   else{
-    error = true;
+    errorState = true;
     return false;
   }
   return true;

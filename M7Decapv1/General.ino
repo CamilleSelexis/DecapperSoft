@@ -15,7 +15,7 @@ void Status(){
 int getStatus(){
   int statusDecap = 0;
   if(HS)statusDecap = 0; //Decapper HS
-  else if(error)  statusDecap = 255; //Decapper is in error state
+  else if(errorState)  statusDecap = 255; //Decapper is in error state
   else if(M4work) statusDecap = 4; //Decapper working
   else if(!isInit) statusDecap = 3; //Decapper not init
   else if(capHeld) statusDecap = 2; //Decapper has a cap held, ready for recap
