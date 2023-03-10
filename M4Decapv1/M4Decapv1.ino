@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 4
+#define DECAP_ID 1
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -113,7 +113,7 @@ long uSToTurnC = ceil(STEP_TURN*CGEAR*CTRANS*USTEPS);
 uint32_t standbyC = 0;
 
 //Screw parameters
-#define SCREW_TIME 2 //6 sec to screw/unscrew the cap
+#define SCREW_TIME 1 //6 sec to screw/unscrew the cap
 float capThread = 6; //mm/turn
 float unscrewRot = 0.8;//turn -> rotation necessary to unscrew the cap
 uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw

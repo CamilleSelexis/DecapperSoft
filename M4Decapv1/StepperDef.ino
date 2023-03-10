@@ -25,7 +25,7 @@ void setHighSpeed(){
 void setScrewingSpeed() {
 
 
-  unsigned long screwSpeedZ = ceil(ZUnscrew/(SCREW_TIME)); //take 6 sec to unscrew the cap
+  unsigned long screwSpeedZ = ceil(ZUnscrew/(SCREW_TIME)); //take 6 sec to unscrew the cap -> 912000 steps
   unsigned long screwSpeedC = ceil(CUnscrew/(SCREW_TIME));
   
   ControllerZ.setVMAX(screwSpeedZ<<8,0); //first 8 bits are for decimal
