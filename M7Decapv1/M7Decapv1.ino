@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  1
+#define DECAP_ID  4
 #if DECAP_ID == 1
   #define CAP_CENTER 156 //Position of the center of the cap in px
   #define CAP_HEIGHT 240

@@ -176,7 +176,7 @@ bool Unscrew(){
 }
 bool goToStandbyWithCap() {
   checkpoints = 4;
-  ControllerZ.setTarget(standbyZ);
+  ControllerZ.setTarget(standbyZAfterDecap);
     if(!motor_running()){
     RPC.println("Failed goToStandby");
     return false;

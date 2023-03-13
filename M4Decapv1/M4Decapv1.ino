@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 1
+#define DECAP_ID 4
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -95,17 +95,15 @@ int checkpoints = 0; //This value is incremented before each move so that we hav
 #define CLEAR_RUNNING Zrunning = false;Mrunning=false;Crunning = false;
 
 //Z positions
-uint32_t standbyZ = 6000000; //above the bottle so that precise can take and bring new bottles
+uint32_t standbyZ = 7000000; //above the bottle so that precise can take and bring new bottles
+uint32_t standbyZAfterDecap = 6000000; // Minimal clearance so that the precise can remove the basket without its cap
 uint32_t Znear = 9000000; //Just above the cap
 uint32_t capHeight = 11800000; //Cap pressed
-//uint32_t capDecapZ = 10500000; //Cap pressed + 6mm -> 10860000
-//uint32_t screwStartZ = 10500000;
-//float ZScrewDist = 8; //8mm course to screw/unscrew the cap
 
 //M positions
-uint32_t standbyM = 10000;
-uint32_t Mopen = 10000;
-uint32_t capRelease = 10000; //Release the cap = open
+uint32_t standbyM = 1000000;
+uint32_t Mopen = 1000000;
+uint32_t capRelease = 1000000; //Release the cap = open
 uint32_t capHold = 3100000; //Gripped on the cap without little spikes
 uint32_t capNear = 2000000;
 long uSToTurnC = ceil(STEP_TURN*CGEAR*CTRANS*USTEPS);
@@ -113,12 +111,12 @@ long uSToTurnC = ceil(STEP_TURN*CGEAR*CTRANS*USTEPS);
 uint32_t standbyC = 0;
 
 //Screw parameters
-#define SCREW_TIME 1 //6 sec to screw/unscrew the cap
+#define SCREW_TIME 4 //4 sec to screw/unscrew the cap
 float capThread = 6; //mm/turn
 float unscrewRot = 0.8;//turn -> rotation necessary to unscrew the cap
-uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw
+uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw -> 1000000 steps
 uint32_t ZScrewingPos = capHeight-ZUnscrew; //position corresponding to end of unscrew movement/start of screw
-long CUnscrew = -ceil(unscrewRot*CGEAR*CTRANS*STEP_TURN*USTEPS); //C relative movement to unscrew/screw
+long CUnscrew = -ceil(unscrewRot*CGEAR*CTRANS*STEP_TURN*USTEPS); //C relative movement to unscrew/screw -> 4500000 steps
 long CScrew = -CUnscrew;
 
 
