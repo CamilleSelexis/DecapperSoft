@@ -290,7 +290,7 @@ bool init_driver(TMC4361A *pController) {
       break;
     }
     while(!pController->isTargetReached()){
-    if(millis()-time_start > TIMEOUT_MVMT) return false; //Wait for the motor to turn
+    if(millis()-time_start > TIMEOUT_MVMT){ return false;} //Wait for the motor to turn
     }
     //motor_running();
     long newPos = pController->getEncoderPos(); //Should be equal to 50*256
