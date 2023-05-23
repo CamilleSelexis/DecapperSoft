@@ -3,6 +3,7 @@ void refAllHome(){ //Initialisation routine
   task_start_time = millis();
   Serial.println("The device will start its initialization");
   LEDR_ON;
+  errorState = false; //Clear error flag
   *M4work_pntr = RPC.call("Initialize").as<bool>();
 }
 

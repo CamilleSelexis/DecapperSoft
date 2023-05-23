@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  2
+#define DECAP_ID  4
 #if DECAP_ID == 1
   #define CAP_CENTER 156 //Position of the center of the cap in px
   #define CAP_HEIGHT 240
@@ -155,7 +155,6 @@ EthernetServer server = EthernetServer(80);  // (port 80 is default for HTTP) 52
 void setup() {
   //set Pins
   pinMode(CLK16_PIN,OUTPUT);
-  LEDG_ON;
   //pinMode(EN_PIN,OUTPUT);
   //digitalWrite(EN_PIN,HIGH);
   //set up Timer8 for clk generation
@@ -167,6 +166,8 @@ void setup() {
   ExtClk = F_CPU/10;
   //Timer 1 CH1 D1 is used by the camera
   //init serial port
+  long timer_init = millis();
+  LEDG_ON;
   Serial.begin(115200);
   //while(!Serial);
   Sprintln("Setup start");//Serial.println("Setup start");
@@ -218,6 +219,7 @@ void setup() {
   LEDG_OFF;
   //Serial.println("Setup done");
   Sprintln("Setup done");
+  Sprint(millis()-timer_init);
 }
 
 void loop() {

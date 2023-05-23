@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 1
+#define DECAP_ID 4
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -32,7 +32,7 @@
 //Decapper 3
 #if DECAP_ID == 3
   #define Z_ZERO  3347621535
-  #define M_ZERO  3353170522
+  #define M_ZERO  3353270522
   #define C_ZERO  3226765910
 
 #endif
@@ -113,7 +113,7 @@ uint32_t standbyC = 0;
 //Screw parameters
 #define SCREW_TIME 4 //4 sec to screw/unscrew the cap
 float capThread = 6; //mm/turn
-float unscrewRot = 0.8;//turn -> rotation necessary to unscrew the cap
+float unscrewRot = 0.83;//turn -> rotation necessary to unscrew the cap
 //float scaling = 1.1; //Variable used to proportionnaly increase both Z and C movements amplitude
 uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw -> 1000000 steps
 uint32_t ZScrewingPos = capHeight-ZUnscrew; //position corresponding to end of unscrew movement/start of screw
@@ -162,6 +162,7 @@ TMC4361A *pControllerZ = &ControllerZ;
 TMC4361A *pControllerM = &ControllerM;
 TMC4361A *pControllerC = &ControllerC;
 void setup() {
+  long timer_init = millis();
   //Initialize pins
   pin_init();
   digitalWrite(LEDR,LOW);
@@ -182,6 +183,7 @@ void setup() {
   RPC.println("M4 setup done");
   RPC.call("M4TaskCompleted").as<bool>();
   digitalWrite(LEDR,HIGH);
+  RPC.println(millis()-timer_init);
   delay(1000);
 }
 
@@ -221,11 +223,20 @@ void loop() {
       //If calibration failed, redo it
       DRIVER_ON;
       stopRoutine = false;
-      if(ControllerZ.isEncoderFail()) ControllerZ.init_CLPosital(Z_ZERO);
+      if(ControllerZ.isEncoderFail()){
+        ControllerZ.init_CLPosital(Z_ZERO);
+        RPC.println(" Z Encoder fail");
+      }
       delay(50);
-      if(ControllerM.isEncoderFail()) ControllerM.init_CLPosital(M_ZERO);
+      if(ControllerM.isEncoderFail()){
+        ControllerM.init_CLPosital(M_ZERO);
+        RPC.println(" M Encoder fail");
+      }
       delay(50);
-      if(ControllerC.isEncoderFail()) ControllerC.init_CLPosital(C_ZERO);
+      if(ControllerC.isEncoderFail()){
+        ControllerC.init_CLPosital(C_ZERO);
+        RPC.println(" C Encoder fail");
+      }
       delay(50);
       goToInitPos();
       setLowSpeed();
@@ -243,7 +254,7 @@ void loop() {
       stopRoutine = false;
       delay(500); //To properly print all messages
       if(!RPC.call("initDone",Zstate,Mstate,Cstate).as<bool>())
-          RPC.println("Error sending task completed");
+          RPC.println("Error during init procedure");
       state = 0; //return to default state
       break;
       

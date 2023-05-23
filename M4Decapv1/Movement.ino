@@ -1,7 +1,7 @@
 //Contains functions setting target positions for the 3 motors
 
 //this function is called when a motor is running and returns true when each motor is done, return false if the movement timeouts (30 sec)
-bool motor_running(){
+bool motor_running(long timeout){
   LEDR_ON;
   long time_start = millis();
   long time_update = time_start;
@@ -10,14 +10,14 @@ bool motor_running(){
   //if(MPos != MTarget)    RPC.println("M is running");
   //if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
-    if(millis()-time_update > TIME_UPDATE){
+    if(millis()-time_update > timeout){
 
       updateValues();
       time_update = millis();
     }
     delay(50); //Read every 50 ms
     //Check timeout condition
-    if(millis()-time_start > TIMEOUT_MVMT){
+    if(millis()-time_start > timeout){
       RPC.println("TimeOut during movement");
       ControllerZ.setTargetRelative(0);
       ControllerM.setTargetRelative(0);
@@ -36,7 +36,7 @@ bool motor_running(){
         RPC.println("Encoder M fail");
         if(MTarget == capHold && !stopRoutine) { //Encoder fail happened when trying to grip
           RPC.println("Realign routine start");
-          if( realignCap()){
+          if( realignCap(timeout)){
             LEDR_OFF;
             CLEAR_RUNNING;
             return true;
@@ -64,7 +64,7 @@ bool motor_running(){
   CLEAR_RUNNING;
   return true;
 }
-bool realignCap(){
+bool realignCap(long timeout){
   long time_start = millis();
   
   setLowSpeed();
@@ -75,7 +75,7 @@ bool realignCap(){
   while(!ControllerM.isTargetReached()){
     //Motor is running
     delay(50);
-    if(millis()-time_start > TIMEOUT_MVMT){
+    if(millis()-time_start > timeout){
       RPC.println("Timeout in realign");
       return false; //Realign failed
     }
@@ -89,7 +89,7 @@ bool realignCap(){
     while(!(ControllerM.isTargetReached() && ControllerC.isTargetReached()) && abs(ControllerM.getEncoderDev())<20000){ //Doit vérifier cette valeure
       //Motor is running
       delay(50);
-      if(millis()-time_start > TIMEOUT_MVMT) return false; //Realign failed
+      if(millis()-time_start > timeout) return false; //Realign failed
     }
     RPC.println(ControllerM.getEncoderDev());
     //Si sortit du while: soit encoderDev>10000 -> doit réouvrir et retourner le C
@@ -101,10 +101,11 @@ bool realignCap(){
       while(!ControllerM.isTargetReached()){
         //Motor is running
         delay(50);
-        if(millis()-time_start > TIMEOUT_MVMT) return false; //Realign failed
+        if(millis()-time_start > timeout) return false; //Realign failed
       }
     }
     else{
+      setDefaultSpeed();
       return true; //Realign success
     }
     updateValues();
@@ -145,7 +146,7 @@ bool AlignCap(long capPos){
   ControllerZ.setTarget(capHeight);
   ControllerM.setTarget(Mopen);
   ControllerC.setTarget(capPos);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed AlignCap");
     return false;
   }
@@ -154,7 +155,7 @@ bool AlignCap(long capPos){
 bool CloseClaws(){
   checkpoints = 2;
   ControllerM.setTarget(capHold);
-  if(!motor_running()){
+  if(!motor_running(10000)){ //Reduced timeout for closing, it should then do the realign procedure faster
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -166,7 +167,7 @@ bool Unscrew(){
   setScrewingSpeed();
   ControllerZ.setTarget(ZScrewingPos);
   ControllerC.setTargetRelative(CUnscrew);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -177,7 +178,7 @@ bool Unscrew(){
 bool goToStandbyWithCap() {
   checkpoints = 4;
   ControllerZ.setTarget(standbyZAfterDecap);
-    if(!motor_running()){
+    if(!motor_running(15000)){
     RPC.println("Failed goToStandby");
     return false;
   }
@@ -213,7 +214,7 @@ bool recap(int resumeVal){
 bool goToRecap(){
   checkpoints = 1;
   ControllerZ.setTarget(ZScrewingPos);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -226,7 +227,7 @@ bool Screw(){
   setScrewingSpeed();
   ControllerZ.setTarget(capHeight);
   ControllerC.setTargetRelative(CScrew);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -237,7 +238,7 @@ bool OpenClaws(){
   setDefaultSpeed();
   //RPC.println("Release the cap");
   ControllerM.setTarget(capRelease);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -249,7 +250,7 @@ bool goToStandby() {
   ControllerZ.setTarget(standbyZ);
   ControllerM.setTarget(standbyM);
   //ControllerC.setTarget(standbyC);
-  if(!motor_running()){
+  if(!motor_running(20000)){
     RPC.println("Failed goToStandby");
     return false;
   }
@@ -259,13 +260,14 @@ bool goToStandby() {
 //Initialize Driver & Controller Routine---------------------------
 bool goToInitPos(){
   setDefaultSpeed();
+  setLowAccel();
   ControllerM.setTarget(standbyM);
-  if(!motor_running()){
+  if(!motor_running(20000)){
     RPC.println("Failed goToStandby");
     return false;}
   ControllerZ.setTarget(standbyZ);
   ControllerC.setTarget(standbyC);
-  if(!motor_running()){
+  if(!motor_running(20000)){
     RPC.println("Failed goToStandby");
     return false;}
   return true;
@@ -308,7 +310,7 @@ bool init_driver(TMC4361A *pController) {
 bool ZrelMove(long value){
   RPC.print("Z will move by ");RPC.println(value);
   ControllerZ.setTargetRelative(value);
-  if(!motor_running()){
+  if(!motor_running(60000)){
     RPC.println("Failed the relative move on Z");
     return false;
   }
@@ -317,7 +319,7 @@ bool ZrelMove(long value){
 bool MrelMove(long value){
   RPC.print("M will move by ");RPC.println(value);
   ControllerM.setTargetRelative(value);
-  if(!motor_running()){
+  if(!motor_running(60000)){
     RPC.println("Failed the relative move on M");
     return false;
   }
@@ -326,7 +328,7 @@ bool MrelMove(long value){
 bool CrelMove(long value){
   RPC.print("C will move by ");RPC.println(value);
   ControllerC.setTargetRelative(value);
-  if(!motor_running()){
+  if(!motor_running(60000)){
     RPC.println("Failed the relative move on C");
     return false;
   }
@@ -425,7 +427,7 @@ bool ApproachFlask(){
   ControllerZ.setTarget(Znear);
   ControllerM.setTarget(Mopen);
   
-  if(!motor_running()){//wait for the driver to finish their movements
+  if(!motor_running(15000)){//wait for the driver to finish their movements
     RPC.println("Failed ApproachFlask");
     return false;
   }
@@ -438,7 +440,7 @@ bool UnscrewCap(){
   //RPC.println("Hold the cap");
   checkpoints = 2;
   ControllerM.setTarget(capHold);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -447,7 +449,7 @@ bool UnscrewCap(){
   setScrewingSpeed();
   ControllerZ.setTarget(ZScrewingPos);
   ControllerC.setTargetRelative(CUnscrew);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -461,7 +463,7 @@ bool ScrewCap(){
   //RPC.println("Going to screw height");
   checkpoints = 1;
   ControllerZ.setTarget(ZScrewingPos);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -470,7 +472,7 @@ bool ScrewCap(){
   setScrewingSpeed();
   ControllerZ.setTarget(capHeight);
   ControllerC.setTargetRelative(CScrew);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }
@@ -478,7 +480,7 @@ bool ScrewCap(){
   setDefaultSpeed();
   //RPC.println("Release the cap");
   ControllerM.setTarget(capRelease);
-  if(!motor_running()){
+  if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;
   }

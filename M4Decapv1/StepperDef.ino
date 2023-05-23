@@ -43,3 +43,8 @@ void setDefaultSpeed() {
   ControllerC.setAMAX(AMAX_DEFAULT);
   ControllerM.setAMAX(AMAX_DEFAULT);
 }
+void setLowAccel(){
+  ControllerZ.setAMAX(AMAX_SLOW);
+  ControllerM.setAMAX(AMAX_SLOW);
+  ControllerC.setAMAX(AMAX_SLOW);
+}
