@@ -378,7 +378,9 @@ void loop() {
       break;
    
     case 101:
+    RPC.println("Init Controllers");
       initControllers();
+      state =0;
       break;
     default:
       RPC.println("Wrong state");

@@ -58,6 +58,7 @@ bool motor_running(long timeout){
       }
     LEDR_OFF;
     CLEAR_RUNNING;
+    return false;
     }
   }
   LEDR_OFF;

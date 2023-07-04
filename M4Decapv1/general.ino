@@ -69,7 +69,8 @@ void updateValues(){
 }
 
 void initControllers(){
-  pin_init();
+  //pin_init();
+  RPC.println("Init controllers 2");
   ControllerZ.begin();
   ControllerM.begin();
   ControllerC.begin();
