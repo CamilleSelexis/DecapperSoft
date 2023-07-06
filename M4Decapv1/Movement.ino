@@ -10,8 +10,7 @@ bool motor_running(long timeout){
   //if(MPos != MTarget)    RPC.println("M is running");
   //if(CPos != CTarget)    RPC.println("C is running");
   while(!(ControllerZ.isTargetReached() && ControllerM.isTargetReached() && ControllerC.isTargetReached())){
-    if(millis()-time_update > timeout){
-
+    if(millis()-time_update > 1000){
       updateValues();
       time_update = millis();
     }
@@ -22,7 +21,6 @@ bool motor_running(long timeout){
       ControllerZ.setTargetRelative(0);
       ControllerM.setTargetRelative(0);
       ControllerC.setTargetRelative(0);
-
       //Check on which axis the error happened
       if(ControllerZ.isEncoderFail()){
         //RPC.call("ZEncoderFail").as<bool>();
