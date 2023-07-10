@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 4
+#define DECAP_ID 2
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -25,7 +25,7 @@
 #if DECAP_ID == 2
 // 3354193706  3355753764 - //310554  1935450 // 60626 1685450Encoder  3355434317
   #define Z_ZERO  3353994826
-  #define M_ZERO  3607574
+  #define M_ZERO  7507574
   #define C_ZERO  3324718694 
 
 #endif
