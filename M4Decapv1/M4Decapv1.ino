@@ -13,7 +13,7 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 2
+#define DECAP_ID 3
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
@@ -24,8 +24,8 @@
 //Decapper 2
 #if DECAP_ID == 2
 // 3354193706  3355753764 - //310554  1935450 // 60626 1685450Encoder  3355434317
-  #define Z_ZERO  3353994826
-  #define M_ZERO  7507574
+  #define Z_ZERO  3354100826 //3353994826 - 237440 = 3’353’757’386
+  #define M_ZERO  2900000
   #define C_ZERO  3324718694 
 
 #endif
@@ -112,8 +112,8 @@ uint32_t standbyC = 0;
 
 //Screw parameters
 #define SCREW_TIME 4 //4 sec to screw/unscrew the cap
-float capThread = 6; //mm/turn
-float unscrewRot = 0.83;//turn -> rotation necessary to unscrew the cap
+float capThread = 8; //mm/turn was 6
+float unscrewRot = 0.7;//turn -> rotation necessary to unscrew the cap 0.8->0.86
 //float scaling = 1.1; //Variable used to proportionnaly increase both Z and C movements amplitude
 uint32_t ZUnscrew = ceil(capThread*unscrewRot*ZGEAR*ZTRANS*STEP_TURN*USTEPS/ZSCREWSTEP); //Z relative movement to unscrew/screw -> 1000000 steps
 uint32_t ZScrewingPos = capHeight-ZUnscrew; //position corresponding to end of unscrew movement/start of screw
