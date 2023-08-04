@@ -177,6 +177,7 @@ bool Unscrew(){
 bool goToStandbyWithCap() {
   checkpoints = 4;
   ControllerZ.setTarget(standbyZAfterDecap);
+  ControllerC.setTargetRelative(CUnscrew); //Continue turning while going up
     if(!motor_running(15000)){
     RPC.println("Failed goToStandby");
     return false;
@@ -213,6 +214,7 @@ bool recap(int resumeVal){
 bool goToRecap(){
   checkpoints = 1;
   ControllerZ.setTarget(ZScrewingPos);
+  ControllerC.setTargetRelative(CScrew);
   if(!motor_running(15000)){
     RPC.println("Failed UnscrewCap");
     return false;

@@ -13,12 +13,12 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 3
+#define DECAP_ID 4
 //Defines the 0 position in encoder absolute position for each axis
 //Decapper 1
 #if DECAP_ID == 1
   #define Z_ZERO  3349898579
-  #define M_ZERO  3352948773 // 502164 -3000000 = 0
+  #define M_ZERO  3352848773 // 502164 -3000000 = 0
   #define C_ZERO  2429052
 #endif
 //Decapper 2
@@ -104,7 +104,7 @@ uint32_t capHeight = 11800000; //Cap pressed
 uint32_t standbyM = 1000000;
 uint32_t Mopen = 1000000;
 uint32_t capRelease = 1000000; //Release the cap = open
-uint32_t capHold = 2900000; //Gripped on the cap without little spikes
+uint32_t capHold = 2900000; //Gripped on the cap without little spikes 2900000
 uint32_t capNear = 2000000;
 long uSToTurnC = ceil(STEP_TURN*CGEAR*CTRANS*USTEPS);
 //C positions
