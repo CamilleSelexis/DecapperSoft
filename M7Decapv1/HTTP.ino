@@ -1,7 +1,7 @@
-String red_dot = "iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAERJREFUKFNjZEADb2VU/oOEhJ/cYUSXgwvAFKErQNYEVoxLIUwjTANpigmZimw6I0mKaedmmJuIDjrksCUqUtAjAxsfAG6/KAyiiHWSAAAAAElFTkSuQmCC";
+/*String red_dot = "iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAERJREFUKFNjZEADb2VU/oOEhJ/cYUSXgwvAFKErQNYEVoxLIUwjTANpigmZimw6I0mKaedmmJuIDjrksCUqUtAjAxsfAG6/KAyiiHWSAAAAAElFTkSuQmCC";
 String green_dot = "iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAERJREFUKFNjZEADcs/C/oOEHkmtYkSXgwvAFKErQNYEVoxLIUwjTANpigmZimw6I0mKaedmmJuIDjrksCUqUtAjAxsfAJ6PKAznF8FZAAAAAElFTkSuQmCC";
 String yellow_dot = "iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAERJREFUKFNjZEAD/0/y/QcJMZp/YkSXgwvAFGEoQNIEVoxLIUwjzBbSFBMyFdl0RpIU087NMDcRHXTIYUtUpKBHBjY+ACJeKAzktf86AAAAAElFTkSuQmCC";
-
+*/
 void endConnection(EthernetClient* client_pntr){
   client_pntr->print("Connection closed by the server at internal time : ");client_pntr->println(millis());
   //Close the connection
@@ -125,7 +125,15 @@ void statusHttp(EthernetClient* client_pntr,String currentLine){
   client_pntr->println();
   client_pntr->print("Received command : " + currentLine + " at internal time :");client_pntr->println(millis());
   client_pntr->print("status=");client_pntr->println(state);
-
+  if(state >128) {
+    client_pntr->print("Decapper in error State ErrorCode=");client_pntr->println(state);
+    if(state&0b00000010)client_pntr->println("Error During Init");
+    if(state&0b00000100)client_pntr->println("Error During Decap");
+    if(state&0b00001000)client_pntr->println("Error During Recap");
+    if(state&0b01000000)client_pntr->println("Error on Axis Z");
+    if(state&0b00100000)client_pntr->println("Error on Axis M");
+    if(state&0b00010000)client_pntr->println("Error on Axis C");
+  }
   client_pntr->print("Connection closed by the server at internal time : ");client_pntr->println(millis());
   delay(10);
   while (client_pntr->read() != -1);

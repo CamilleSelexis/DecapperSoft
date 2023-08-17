@@ -66,8 +66,8 @@ bool motor_running(long timeout){
 bool realignCap(long timeout){
   long time_start = millis();
   
-  setLowSpeed();
-  //Déserre M -> 2500000
+  //setLowSpeed();
+  //Déserre M -> 1800000
   ControllerM.setTarget(capNear);
   RPC.println("Current M target = ");RPC.println(ControllerM.getCurrentTarget());
   delay(50);
@@ -104,7 +104,7 @@ bool realignCap(long timeout){
       }
     }
     else{
-      setDefaultSpeed();
+      //setDefaultSpeed();
       return true; //Realign success
     }
     updateValues();

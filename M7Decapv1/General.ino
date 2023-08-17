@@ -21,10 +21,19 @@ int getStatus(){
   else if(capHeld) statusDecap = 2; //Decapper has a cap held, ready for recap
   else if(stopCalled) statusDecap = 5; //Stop has been called, need to perform a resume or abort before continuing
   else statusDecap = 1; //Decapper is ready
-  
+
+  //If the decapper is in errorState, then we try to get a more accurate error information
+  byte errorCode = 0;
+  if(statusDecap == 255){
+    errorCode = errorCode + 1<<7; //ErrorCode start at 128
+    if(!Zstate) errorCode = errorCode + 1<<6;
+    if(!Mstate) errorCode = errorCode + 1<<5;
+    if(!Cstate) errorCode = errorCode + 1<<4;
+    if(errorSource>0) errorCode = errorCode +1<<errorSource;//3,2,1
+    statusDecap = errorCode;
+  }
   return statusDecap; 
 }
-
 void resetFunc(void) {
   unsigned long *registerAddr;
   registerAddr = (unsigned long *)0xE000ED0C; //Writes to the AIRCR register of the stm32h747 to software restet the arduino

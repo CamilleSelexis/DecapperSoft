@@ -19,7 +19,7 @@
 #include "camera.h"
 #include "himax.h"
 
-#define DECAP_ID  4
+#define DECAP_ID  1
 #if DECAP_ID == 1
   #define CAP_CENTER 156 //Position of the center of the cap in px depends on how the controller is aligned with the flask
   #define CAP_HEIGHT 240
@@ -121,6 +121,7 @@ long CDevEnc = 0;
 bool Zstate = false;
 bool Mstate = false;
 bool Cstate = false;
+uint8_t errorSource = 0;
 //Camera related variables --------------------------------------------------------------
 const int imgH = 240; //Y dimension
 const int imgW = 320; //X dimension
