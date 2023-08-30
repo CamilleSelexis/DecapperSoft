@@ -39,7 +39,7 @@ bool decapDone(bool decapSuccess){
   else{
     errorState = true;
     errorSource = 2;
-    return false;
+    return true;
   }
   return true;
 }
@@ -55,7 +55,7 @@ bool recapDone(bool recapSuccess){
   else{
     errorState = true;
     errorSource = 3;
-    return false;
+    return true;
   }
   return true;
 }

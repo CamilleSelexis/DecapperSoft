@@ -19,7 +19,7 @@ bool motor_running(long timeout){
     if(millis()-time_start > timeout){
       RPC.println("TimeOut during movement");
       ControllerZ.setTargetRelative(0);
-      ControllerM.setTargetRelative(0);
+      //ControllerM.setTargetRelative(0);
       ControllerC.setTargetRelative(0);
       //Check on which axis the error happened
       if(ControllerZ.isEncoderFail()){
@@ -29,6 +29,25 @@ bool motor_running(long timeout){
         CLEAR_RUNNING;
         return false;
       }
+      if(ControllerM.isEncoderFail()){
+        RPC.println("Encoder M fail");
+        if(MTarget == capHold && !stopRoutine){
+          //RPC.println("Bad alignment, not a problem");
+          long encoderMDev = ControllerM.getEncoderDev();
+          delay(10);
+          //RPC.println("Current encoder M deviation = " + String(encoderMDev));
+          ControllerM.setTargetRelative(encoderMDev-50000); //Déserre un peu
+          //long newTargetM = ControllerM.getCurrentTarget();
+          //RPC.println("New M target = " + String(newTargetM));       
+          LEDR_OFF;
+          CLEAR_RUNNING;
+          return true;
+        }
+        LEDR_OFF;
+        CLEAR_RUNNING;
+        return false;
+      }
+      /*
       if(ControllerM.isEncoderFail()){ //Encoder fail on M -> grip on bumps
         //RPC.call("MEncoderFail").as<bool>();
         RPC.println("Encoder M fail");
@@ -39,6 +58,8 @@ bool motor_running(long timeout){
             CLEAR_RUNNING;
             return true;
           }
+          LEDR_OFF;
+          CLEAR_RUNNING;
           return false;
         }
         else {
@@ -48,7 +69,9 @@ bool motor_running(long timeout){
         }
 
       }
+      */
       if(ControllerC.isEncoderFail()){
+        RPC.println("Encoder Z fail");
         //RPC.call("CEncoderFail").as<bool>();
         LEDR_OFF;
         CLEAR_RUNNING;
@@ -109,7 +132,7 @@ bool realignCap(long timeout){
     }
     updateValues();
   }
-  setDefaultSpeed();
+  //setDefaultSpeed();
   return false; //Realign failed
 }
 //----------------------------------------------------------------------------------

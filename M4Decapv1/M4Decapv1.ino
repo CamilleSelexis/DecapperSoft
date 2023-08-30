@@ -32,14 +32,14 @@
 //Decapper 3
 #if DECAP_ID == 3
   #define Z_ZERO  3347621535
-  #define M_ZERO  3353270522
+  #define M_ZERO  3349570522
   #define C_ZERO  3226765910
 
 #endif
 //Decapper 4
 #if DECAP_ID == 4
   #define Z_ZERO  3340374280
-  #define M_ZERO  3349659189
+  #define M_ZERO  3351159189
   #define C_ZERO  3352498375  
 
 #endif
@@ -205,6 +205,7 @@ void loop() {
       CmdResult = decap(0);
       if(!RPC.call("decapDone",CmdResult).as<bool>())
         RPC.println("Error sending task completed");
+      DRIVER_OFF;
       state = 0; //return to default state
       //send decap done to M7
       break;
@@ -214,6 +215,7 @@ void loop() {
       CmdResult = recap(0);
       if(!RPC.call("recapDone",CmdResult).as<bool>())
         RPC.println("Error sending task completed");
+      DRIVER_OFF;
       state = 0; //return to default state
 
       //send recap done to M7
