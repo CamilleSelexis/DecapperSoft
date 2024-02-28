@@ -15,7 +15,7 @@ String homePageStr = R"=====(
     #main {display: table; margin: auto;  padding: 10px 10px 10px 10px; } 
     #content { border: 5px solid blue; border-radius: 15px; padding: 10px 0px 10px 0px;}
     #commands { border: 3px solid yellow; border-radius: 9px; padding: 5px 0px 5px 0px;}
-    #Axis {  border: 3px solid green; border-radius: 5px; padding: 5px 0px 5px 0px;}
+    .Axis {  border: 3px solid green; border-radius: 5px; padding: 5px 0px 5px 0px; float:left}
     h2 {text-align:center; margin: 10px 0px 10px 0px;} 
     p { text-align:center; margin: 5px 0px 10px 0px; font-size: 120%;}
     td { text-align:center; font-size: 120%;}
@@ -89,32 +89,54 @@ String homePageStr = R"=====(
    <div id='main'>
      <h2>Decapper <span id='DECAP_ID'>ID</span> UI </h2>
       <p id='P_time'>Time</p>
-     <div id='content'> 
-     <div id='Axis'>
+     <div id='content'>
+     <input type="button" class="button" onclick="ajaxCommand('/init')" value="Init Decapper"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/decap')" value="Decap"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/recap')" value="Recap"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/ZrelMove')" value="Reset"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/ZrelMove')" value="Stop"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/ZrelMove')" value="Resume"> <br/>
+     <div id='AxisZ' class='Axis'>
      <p style="background-color:lightgreen">
-        <strong>Axis Z : </strong>ZPos : <span id='ZPos'>Position</span> ZTarget : <span id='ZTarget'>Target</span>
-        Encoder Z : <span id='ZEncPos'>Position</span> Encoder Dev : <span id='ZEncDev'>Deviation</span>
+     <strong>Axis Z : </strong><br/>
+     <input type="button" class="button" onclick="ajaxCommand('/ZrelMove')" value="Init Axis"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/ZrelMove')" value="Relative Move">
+        <input type="number" class="number" id="ZrelMove" name="ZrelMove" min="-1000000" max="1000000" step="1" value="0"><br/>
+        Position : <span id='ZPos'>ZPos</span><br/>
+        Target : <span id='ZTarget'>ZTarget</span><br/>
+        Encoder Z : <span id='ZEncPos'>Position</span><br/>
+        Encoder Dev : <span id='ZEncDev'>Deviation</span>
      </p>
      </div>
-     <div id='Axis'>
-     <p>
-        Axis M : MPos : <span id='MPos'>Position</span> MTarget : <span id='MTarget'>Target</span>
-        Encoder M : <span id='MEncPos'>Position</span> Encoder Dev : <span id='MEncDev'>Deviation</span>
+     
+       <div id='AxisM' class='Axis'>
+     <p style="background-color:lightgreen">
+     <strong>Axis M : </strong><br/>
+     <input type="button" class="button" onclick="ajaxCommand('/MrelMove')" value="Init Axis"> <br/>
+     <input type="button" class="button" onclick="ajaxCommand('/MrelMove')" value="Relative Move">
+        <input type="number" class="number" id="MrelMove" name="MrelMove" min="-1000000" max="1000000" step="1" value="0"><br/>
+        Position : <span id='MPos'>MPos</span><br/>
+        Target : <span id='MTarget'>MTarget</span><br/>
+        Encoder M : <span id='MEncPos'>Position</span><br/>
+        Encoder Dev : <span id='MEncDev'>Deviation</span>
      </p>
      </div>
-     <div id='Axis'>
-     <p>
-        Axis C : CPos : <span id='CPos'>Position</span> CTarget : <span id='CTarget'>Target</span>
-        Encoder C : <span id='CEncPos'>Position</span> Encoder Dev : <span id='CEncDev'>Deviation</span>
-     </p>
+       <div id='AxisC' class='Axis'>
+         <p style="background-color:lightgreen">
+         <strong>Axis C : </strong><br/>
+         <input type="button" class="button" onclick="ajaxCommand('/CrelMove')" value="Init Axis"> <br/>
+         <input type="button" class="button" onclick="ajaxCommand('/CrelMove')" value="Relative Move">
+         <input type="number" class="number" id="CrelMove" name="CrelMove" min="-1000000" max="1000000" step="1" value="0"><br/>
+         Position : <span id='CPos'>CPos</span><br/>
+         Target : <span id='CTarget'>CTarget</span><br/>
+         Encoder C : <span id='CEncPos'>Position</span><br/>
+         Encoder Dev : <span id='CEncDev'>Deviation</span>
+         </p>
+       </div>
      </div>
      </div>
-  <div id='commands'> 
-  <p>
-    <a href="http://192.168.1.101/showTagList">showTagList</a><br />
-  </p>
-   </div> 
  </body>
 </html>
+
   )=====";
   */

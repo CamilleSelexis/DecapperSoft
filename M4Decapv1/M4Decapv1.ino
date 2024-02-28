@@ -13,8 +13,11 @@
 #include "TMC4361A.h"
 #include "RPC.h"
 
-#define DECAP_ID 1
+#define DECAP_ID 2
 //Defines the 0 position in encoder absolute position for each axis
+//Z -> 6000000 = 129mm from base
+//M -> 1000000 = Mors open by 6 mm
+//C ->0 =  one of the mors aligned on the rail
 //Decapper 1
 #if DECAP_ID == 1
   #define Z_ZERO  3349898579
@@ -24,16 +27,16 @@
 //Decapper 2
 #if DECAP_ID == 2
 // 3354193706  3355753764 - //310554  1935450 // 60626 1685450Encoder  3355434317
-  #define Z_ZERO  3353900826 //3353994826 - 237440 = 3’353’757’386
-  #define M_ZERO  2850000
-  #define C_ZERO  3324718694 
+  #define Z_ZERO  3354241560  //3353994826 - 237440 = 3’353’757’386
+  #define M_ZERO  3353121560
+  #define C_ZERO  3324343084  
 
 #endif
 //Decapper 3
 #if DECAP_ID == 3
   #define Z_ZERO  3347621535
-  #define M_ZERO  3349570522
-  #define C_ZERO  3226765910
+  #define M_ZERO  34595755   //2900000 = 3357511005 0 = 3357511005 -2900000 = 3354611005
+  #define C_ZERO  3222505772  
 
 #endif
 //Decapper 4
